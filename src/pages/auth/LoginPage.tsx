@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { showToast } from '../../utils/toast.tsx';
 
 interface LoginForm {
   email: string;
@@ -37,6 +38,7 @@ const LoginPage = () => {
       navigate('/admin');
     } catch (error) {
       console.error('로그인 실패:', error);
+      showToast('로그인에 실패했습니다. 다시 시도해주세요.', 'error');
     } finally {
       setIsLoading(false);
     }
