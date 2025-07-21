@@ -95,19 +95,15 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        
+
         // 모든 API를 병렬로 호출
-        const [
-          searchRankingResponse,
-          mostClickedResponse,
-          favoritesResponse,
-          usageStatsResponse
-        ] = await Promise.all([
-          getPartnersSearchRanking('7d', 5),
-          getMostClickedPartners(3),
-          getFavoritesStatistics(5),
-          getPartnerUsageStats('30d')
-        ]);
+        const [searchRankingResponse, mostClickedResponse, favoritesResponse, usageStatsResponse] =
+          await Promise.all([
+            getPartnersSearchRanking('7d', 5),
+            getMostClickedPartners(3),
+            getFavoritesStatistics(5),
+            getPartnerUsageStats('30d'),
+          ]);
 
         // 모든 데이터를 한 번에 변환하고 설정
         const searchRankingItems = convertToRankingItem(searchRankingResponse.data.searchRanking);

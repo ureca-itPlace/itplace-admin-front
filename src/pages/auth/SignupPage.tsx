@@ -81,26 +81,6 @@ const SignupPage = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="verificationCode"
-                className="block text-body-3 font-medium text-black"
-              >
-                인증코드
-              </label>
-              <input
-                {...register('verificationCode', {
-                  required: '인증코드를 입력해주세요',
-                })}
-                type="text"
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-grey02 placeholder-grey04 text-black rounded-md focus:outline-none focus:ring-purple04 focus:border-purple04 text-body-3"
-                placeholder="인증코드를 입력하세요"
-              />
-              {errors.verificationCode && (
-                <p className="mt-1 text-body-4 text-danger">{errors.verificationCode.message}</p>
-              )}
-            </div>
-
-            <div>
               <label htmlFor="password" className="block text-body-3 font-medium text-black">
                 비밀번호
               </label>
@@ -140,6 +120,22 @@ const SignupPage = () => {
             </div>
           </div>
 
+          <div>
+            <label htmlFor="verificationCode" className="block text-body-3 font-medium text-black">
+              인증코드
+            </label>
+            <input
+              {...register('verificationCode', {
+                required: '인증코드를 입력해주세요',
+              })}
+              type="text"
+              className="mt-1 appearance-none relative block w-full px-3 py-2 border border-grey02 placeholder-grey04 text-black rounded-md focus:outline-none focus:ring-purple04 focus:border-purple04 text-body-3"
+              placeholder="인증코드를 입력하세요"
+            />
+            {errors.verificationCode && (
+              <p className="mt-1 text-body-4 text-danger">{errors.verificationCode.message}</p>
+            )}
+          </div>
           <div>
             <button
               type="submit"
