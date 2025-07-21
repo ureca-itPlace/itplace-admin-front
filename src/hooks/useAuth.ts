@@ -1,5 +1,6 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from 'react';
+import { showToast } from '../utils/toast.tsx';
 
 interface User {
   email: string;
@@ -34,12 +35,14 @@ export const useAuth = () => {
       email,
       isAuthenticated: true,
     });
+    showToast('로그인에 성공했습니다.', 'success');
   };
 
   const logout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userEmail');
     setUser(null);
+    showToast('로그아웃되었습니다.', 'success');
   };
 
   return {
