@@ -116,15 +116,6 @@ const LoginPage = () => {
               )}
             </button>
           </div>
-
-          <div className="text-center">
-            <p className="text-body-3 text-grey04">
-              계정이 없으신가요?{' '}
-              <Link to="/signup" className="font-medium text-purple04 hover:text-purple05">
-                회원가입
-              </Link>
-            </p>
-          </div>
         </form>
       </div>
     </div>
