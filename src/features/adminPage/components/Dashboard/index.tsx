@@ -153,8 +153,8 @@ const Dashboard = () => {
           data={searchRankingData}
         />
         <WishlistChart
-          title="제휴처별 찜 통계"
-          subtitle="회원이 가장 많이 찜한 제휴처 Top 5"
+          title="제휴처별 관심 통계"
+          subtitle="회원이 가장 관심 있는 제휴처 Top 5"
           data={wishlistData}
           height={345}
         />
