@@ -22,6 +22,7 @@ export interface PartnerSearchRankingResponse {
 
 // 자주 클릭한 제휴처 관련 타입
 export interface MostClickedPartnerItem {
+  partnerId: number;
   partnerName: string;
   clickCount: number;
   rank: number;
@@ -67,16 +68,18 @@ export interface ApiResponse<T = unknown> {
 
 // 제휴처 검색 순위 조회 함수
 export const getPartnersSearchRanking = async (
-  period: '12h' | '1d' | '7d' = '1d',
+  recentperiod: number = 2,
+  prevperiod: number = 3,
   limit: number = 5
 ): Promise<ApiResponse<PartnerSearchRankingResponse>> => {
   try {
     const params = new URLSearchParams({
-      period,
+      recentperiod: recentperiod.toString(),
+      prevperiod: prevperiod.toString(),
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/api/v1/partners/search-ranking?${params}`);
+    const response = await api.get(`/partners/search-ranking?${params}`);
     return response.data;
   } catch (error) {
     console.error('제휴처 검색 순위 조회 실패:', error);
@@ -94,14 +97,14 @@ export const getPartnersSearchRanking = async (
 
 // 자주 클릭한 제휴처 조회 함수
 export const getMostClickedPartners = async (
-  limit: number = 3
+  limit: number = 5
 ): Promise<ApiResponse<MostClickedPartnersResponse>> => {
   try {
     const params = new URLSearchParams({
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/api/v1/benefits/most-clicked?${params}`);
+    const response = await api.get(`/benefits/most-clicked?${params}`);
     return response.data;
   } catch (error) {
     console.error('자주 클릭한 제휴처 조회 실패:', error);
@@ -119,14 +122,14 @@ export const getMostClickedPartners = async (
 
 // 즐겨찾기 통계 조회 함수
 export const getFavoritesStatistics = async (
-  limit: number = 5
+  limit: number = 4
 ): Promise<ApiResponse<FavoritesStatisticsResponse>> => {
   try {
     const params = new URLSearchParams({
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/api/v1/benefits/favorites?${params}`);
+    const response = await api.get(`/benefits/favorite?${params}`);
     return response.data;
   } catch (error) {
     console.error('즐겨찾기 통계 조회 실패:', error);
@@ -144,14 +147,14 @@ export const getFavoritesStatistics = async (
 
 // 제휴처별 이용 통계 조회 함수
 export const getPartnerUsageStats = async (
-  period: '7d' | '30d' | '90d' | '1y' = '30d'
+  period: number = 365
 ): Promise<ApiResponse<PartnerUsageStatsResponse>> => {
   try {
     const params = new URLSearchParams({
-      period,
+      period: period.toString(),
     });
 
-    const response = await api.get(`/api/v1/partners/usage?${params}`);
+    const response = await api.get(`/partners/usage?${params}`);
     return response.data;
   } catch (error) {
     console.error('제휴처별 이용 통계 조회 실패:', error);

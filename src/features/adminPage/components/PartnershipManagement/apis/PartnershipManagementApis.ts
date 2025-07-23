@@ -34,7 +34,7 @@ export interface Partner {
 
 // 혜택 등급별 상세 정보 타입
 export interface TierBenefit {
-  grade: 'BASIC' | 'VIP' | 'VVIP';
+  grade: 'BASIC' | 'VIP' | 'VVIP' | 'VIP콕';
   context: string;
   isAll: boolean;
 }
@@ -49,7 +49,7 @@ export interface BenefitDetail {
   url: string;
   partnerName: string;
   image: string;
-  tierBenefit: TierBenefit[];
+  tierBenefits: TierBenefit[];
 }
 
 // 배치 갱신 결과 타입
@@ -57,6 +57,7 @@ export interface BenefitBatchRefreshResult {
   totalProcessed: number;
   newBenefits: number;
   updatedBenefits: number;
+  deactivatedBenefits: number;
   failedBenefits: number;
   conflictResolutions: number;
   processingTime: string;
@@ -64,9 +65,14 @@ export interface BenefitBatchRefreshResult {
   endTime: string;
 }
 
+// 제휴처 통계 타입
+export interface BenefitStatistics {
+  totalBenefitCount: number;
+}
+
 // 전체 제휴처 수 조회 API
-export const getTotalBenefitCount = async (): Promise<ApiResponse<number>> => {
-  const response = await api.get('/api/v1/benefits/total');
+export const getTotalBenefitCount = async (): Promise<ApiResponse<BenefitStatistics>> => {
+  const response = await api.get('/benefits/total');
   return response.data;
 };
 
@@ -87,7 +93,7 @@ export const getAllPartners = async (
   if (category) params.append('category', category);
   if (type) params.append('type', type);
 
-  const response = await api.get(`/api/v1/benefits?${params}`);
+  const response = await api.get(`/benefits?${params}`);
   return response.data;
 };
 
@@ -105,30 +111,44 @@ export const searchBenefits = async (
     sort,
   });
 
-  const response = await api.get(`/api/v1/benefits/search?${params}`);
+  const response = await api.get(`/benefits/search?${params}`);
   return response.data;
 };
 
 // 혜택 상세 조회 API
 export const getBenefitDetail = async (benefitId: number): Promise<ApiResponse<BenefitDetail>> => {
-  const response = await api.get(`/api/v1/benefit/${benefitId}`);
+  const response = await api.get(`/benefit/${benefitId}`);
   return response.data;
 };
 
 // 혜택 정보 수정 API
 export const updateBenefit = async (
   benefitId: number,
-  benefitData: Partial<BenefitDetail>
-): Promise<ApiResponse<BenefitDetail>> => {
-  const response = await api.put(`/api/v1/benefit/${benefitId}`, benefitData);
+  benefitData: { benefitLimit?: string; manual?: string }
+): Promise<ApiResponse<null>> => {
+  const response = await api.put(`/benefit/${benefitId}`, benefitData);
   return response.data;
 };
 
+// 통신사 혜택 정보 타입
+export interface CarrierBenefitInfo {
+  carrierBenefitId: number;
+  partnerName: string;
+  benefitName: string;
+  mainCategory: 'VIP콕' | '기본 혜택';
+  category: string;
+  benefitType?: 'DISCOUNT' | 'FREE_GIFT';
+  benefitLimit?: string;
+  description?: string;
+  manual?: string;
+  lastUpdated?: string;
+}
+
 // 혜택 정보 배치 갱신 API
-export const refreshBenefitBatch = async (): Promise<
-  ApiResponse<{ batchResult: BenefitBatchRefreshResult }>
-> => {
-  const response = await api.post('/api/v1/benefits/batch-refresh', {});
+export const refreshBenefitBatch = async (
+  carrierBenefits: CarrierBenefitInfo[]
+): Promise<ApiResponse<{ batchResult: BenefitBatchRefreshResult }>> => {
+  const response = await api.post('/benefits/batch-refresh', { carrierBenefits });
   return response.data;
 };
 

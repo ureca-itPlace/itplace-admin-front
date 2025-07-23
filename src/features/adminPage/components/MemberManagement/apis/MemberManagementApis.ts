@@ -21,8 +21,8 @@ export interface PagedResponse<T> {
 
 // 회원 데이터 타입 (API 응답 구조에 맞춤)
 export interface Member {
-  id: number;
-  name: string;
+  userId: number;
+  userName: string;
   email: string;
   phoneNumber: string;
   birthday: string;
@@ -33,7 +33,9 @@ export interface Member {
 // 회원 통계 응답 타입
 export interface MemberStatistics {
   totalUsers: number;
-  lastUpdated: string;
+  basicCount: number;
+  vipCount: number;
+  vvipCount: number;
 }
 
 // 배치 갱신 결과 타입
@@ -49,10 +51,8 @@ export interface BatchRefreshResult {
 }
 
 // 사용자 혜택 이용내역 타입
-export interface UserBenefitUsage {
-  benefitId: number;
-  benefitName?: string;
-  partnerName?: string;
+export interface MembershipUsage {
+  partnerName: string;
   usageDate: string;
   discountAmount: number;
 }
@@ -62,12 +62,12 @@ export interface UserDetail {
   userName: string;
   grade: string;
   membershipId: number;
-  membershipUsage: UserBenefitUsage[];
+  membershipUsage: MembershipUsage[];
 }
 
 // 전체 사용자 수 조회 API
-export const getTotalUserCount = async (): Promise<ApiResponse<number>> => {
-  const response = await api.get('/api/v1/users/total');
+export const getTotalUserCount = async (): Promise<ApiResponse<MemberStatistics>> => {
+  const response = await api.get('/users/total');
   return response.data;
 };
 
@@ -88,7 +88,7 @@ export const getAllUsers = async (
   if (userType) params.append('userType', userType);
   if (grade) params.append('grade', grade);
 
-  const response = await api.get(`/api/v1/users?${params}`);
+  const response = await api.get(`/users?${params}`);
   return response.data;
 };
 
@@ -104,21 +104,33 @@ export const searchUsers = async (
     size: size.toString(),
   });
 
-  const response = await api.get(`/api/v1/users/search?${params}`);
+  const response = await api.get(`/users/search?${params}`);
   return response.data;
 };
 
 // 사용자 혜택 이용내역 조회 API
 export const getUserBenefitUsage = async (userId: number): Promise<ApiResponse<UserDetail>> => {
-  const response = await api.get(`/api/v1/users/${userId}`);
+  const response = await api.get(`/users/${userId}`);
   return response.data;
 };
 
+// 통신사 고객 정보 타입
+export interface CarrierUserInfo {
+  carrierUserId: string;
+  userName: string;
+  grade: 'BASIC' | 'VIP' | 'VVIP';
+  phoneNumber: string;
+  gender?: string;
+  birthday?: string;
+  membershipId?: number;
+  lastUpdated?: string;
+}
+
 // 사용자 정보 배치 갱신 API
-export const refreshUserBatch = async (): Promise<
-  ApiResponse<{ batchResult: BatchRefreshResult }>
-> => {
-  const response = await api.post('/api/v1/users/batch-refresh', {});
+export const refreshUserBatch = async (
+  carrierUsers: CarrierUserInfo[]
+): Promise<ApiResponse<{ batchResult: BatchRefreshResult }>> => {
+  const response = await api.post('/users/batch-refresh', { carrierUsers });
   return response.data;
 };
 
@@ -154,10 +166,7 @@ export const searchMembersWithPagination = async (
   return searchMockMembers(keyword, page, itemsPerPage);
 };
 
-export const getMemberStatistics = async (): Promise<{
-  totalMembers: number;
-  lastUpdated: string;
-}> => {
+export const getMemberStatistics = async (): Promise<MemberStatistics> => {
   // 더미 데이터 사용
   return mockMemberStatistics;
 };

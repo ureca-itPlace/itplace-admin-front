@@ -90,11 +90,11 @@ export const mockWishlistRanking: FavoriteBenefitItem[] = [
 
 // 클릭 통계 더미 데이터
 export const mockClickStatistics: MostClickedPartnerItem[] = [
-  { partnerName: 'CGV', clickCount: 2450, rank: 1 },
-  { partnerName: 'GS25', clickCount: 2280, rank: 2 },
-  { partnerName: '메가박스', clickCount: 2150, rank: 3 },
-  { partnerName: '스타벅스', clickCount: 1980, rank: 4 },
-  { partnerName: '올리브영', clickCount: 1850, rank: 5 },
+  { partnerId: 1, partnerName: 'CGV', clickCount: 2450, rank: 1 },
+  { partnerId: 2, partnerName: 'GS25', clickCount: 2280, rank: 2 },
+  { partnerId: 3, partnerName: '메가박스', clickCount: 2150, rank: 3 },
+  { partnerId: 4, partnerName: '스타벅스', clickCount: 1980, rank: 4 },
+  { partnerId: 5, partnerName: '올리브영', clickCount: 1850, rank: 5 },
 ];
 
 // 이용 통계 더미 데이터

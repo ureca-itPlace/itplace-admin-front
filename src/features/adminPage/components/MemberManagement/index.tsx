@@ -64,8 +64,8 @@ const MemberManagement = () => {
       try {
         setIsLoading(true);
         const statistics = await getMemberStatistics();
-        setTotalMembers(statistics.totalMembers);
-        setLastUpdated(statistics.lastUpdated);
+        setTotalMembers(statistics.totalUsers);
+        setLastUpdated('');
 
         // 첫 페이지 데이터 로드
         await loadMembers(1);
@@ -178,8 +178,8 @@ const MemberManagement = () => {
     try {
       setIsLoading(true);
       const statistics = await getMemberStatistics();
-      setTotalMembers(statistics.totalMembers);
-      setLastUpdated(statistics.lastUpdated);
+      setTotalMembers(statistics.totalUsers);
+      setLastUpdated('');
       setSearchTerm('');
       setDebouncedSearchTerm('');
       setCurrentPage(1);
@@ -220,7 +220,7 @@ const MemberManagement = () => {
         return userType === 'LINKED' ? 'U+ 연동' : '일반';
       },
     },
-    { key: 'name', label: '회원명', width: '140px' },
+    { key: 'userName', label: '회원명', width: '140px' },
     {
       key: 'grade',
       label: '등급',
