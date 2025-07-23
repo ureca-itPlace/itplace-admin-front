@@ -99,10 +99,10 @@ const Dashboard = () => {
         // 모든 API를 병렬로 호출
         const [searchRankingResponse, mostClickedResponse, favoritesResponse, usageStatsResponse] =
           await Promise.all([
-            getPartnersSearchRanking('7d', 5),
-            getMostClickedPartners(3),
-            getFavoritesStatistics(5),
-            getPartnerUsageStats('30d'),
+            getPartnersSearchRanking(2, 3, 5), // recentperiod, prevperiod, limit
+            getMostClickedPartners(5), // limit
+            getFavoritesStatistics(4), // limit (Swagger default 4)
+            getPartnerUsageStats(365), // period (일 단위, Swagger default 365)
           ]);
 
         // 모든 데이터를 한 번에 변환하고 설정
