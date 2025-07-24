@@ -12,7 +12,7 @@ interface UsageStatisticsProps {
 const CustomTick = (props: { x: number; y: number; payload: { value: string } }) => {
   const { x, y, payload } = props;
   return (
-    <text x={x} y={y} dy={20} textAnchor="middle" className="text-black text-body-1">
+    <text x={x} y={y} dy={20} textAnchor="middle" className="text-black text-body-2">
       {payload.value}
     </text>
   );
