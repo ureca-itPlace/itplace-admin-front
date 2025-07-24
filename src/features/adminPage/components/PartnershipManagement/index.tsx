@@ -5,6 +5,7 @@ import StatisticsCard from '../../../../components/common/StatisticsCard';
 import SearchBar from '../../../../components/common/SearchBar';
 import FilterDropdown from '../../../../components/common/FilterDropdown';
 import DataTable from '../../../../components/common/DataTable';
+import BenefitFilterToggle from '../../../../components/common/BenefitFilterToggle';
 import ActionButton from '../../../../components/common/ActionButton';
 import Pagination from '../../../../components/common/Pagination';
 import PartnerDetailModal from './components/PartnerDetailModal';
@@ -16,6 +17,8 @@ import {
 } from './apis/PartnershipManagementApis';
 
 const PartnershipManagement = () => {
+  // BenefitFilterToggle 상태
+  const [benefitToggle, setBenefitToggle] = useState('default' as 'default' | 'vipkok');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -425,17 +428,17 @@ const PartnershipManagement = () => {
       </div>
 
       {/* 검색 및 액션 버튼 섹션 */}
-      <div className="flex items-center justify-between mb-[28px]" style={{ width: 1410 }}>
-        <SearchBar
-          placeholder="제휴처 검색"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          onClear={() => setSearchTerm('')}
-          width={344}
-          height={50}
-        />
-
+      <div className="flex items-center mb-[28px] justify-between" style={{ width: 1410 }}>
+        <BenefitFilterToggle value={benefitToggle} onChange={setBenefitToggle} />
         <div className="flex items-center gap-3">
+          <SearchBar
+            placeholder="제휴처 검색"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onClear={() => setSearchTerm('')}
+            width={344}
+            height={50}
+          />
           <div className="filter-dropdown">
             <FilterDropdown
               isOpen={showFilterDropdown}
@@ -445,7 +448,6 @@ const PartnershipManagement = () => {
               hasActiveFilters={selectedCategory !== null || selectedBenefitType !== null}
             />
           </div>
-
           <ActionButton
             icon={<TbRefresh size={20} />}
             onClick={handleRefresh}

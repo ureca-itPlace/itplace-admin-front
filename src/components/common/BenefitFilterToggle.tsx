@@ -14,10 +14,12 @@ export default function BenefitFilterToggle({
   fontSize = 'text-title-7',
 }: BenefitFilterToggleProps) {
   return (
-    <div className={`flex ${width} h-[50px] mb-6 bg-grey01 rounded-[10px] p-[4px]`}>
+    <div
+      className={`flex items-center ${width} h-[50px] bg-grey01 rounded-[10px] border border-grey02 `}
+    >
       <button
         onClick={() => onChange('default')}
-        className={`flex-1 rounded-[8px] ${fontSize} transition-colors ${
+        className={`flex-1 h-[42px] rounded-[8px] ${fontSize} transition-colors flex items-center justify-center ${
           value === 'default' ? 'bg-white text-purple04 shadow-sm' : 'bg-transparent text-grey03'
         }`}
       >
@@ -25,7 +27,7 @@ export default function BenefitFilterToggle({
       </button>
       <button
         onClick={() => onChange('vipkok')}
-        className={`flex-1 rounded-[8px] ${fontSize} transition-colors ${
+        className={`flex-1 h-[42px] rounded-[8px] ${fontSize} transition-colors flex items-center justify-center ${
           value === 'vipkok' ? 'bg-white text-purple04 shadow-sm' : 'bg-transparent text-grey03'
         }`}
       >
