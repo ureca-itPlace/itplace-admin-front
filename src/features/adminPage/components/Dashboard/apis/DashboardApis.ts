@@ -64,7 +64,7 @@ export const getPartnersSearchRanking = async (
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/partners/search-ranking?${params}`);
+    const response = await api.get(`/api/v1/partners/search-ranking?${params}`);
     return response.data;
   } catch (error) {
     console.error('제휴처 검색 순위 조회 실패:', error);
@@ -89,7 +89,7 @@ export const getMostClickedPartners = async (
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/benefits/most-clicked?${params}`);
+    const response = await api.get(`/api/v1/benefits/most-clicked?${params}`);
     return response.data;
   } catch (error) {
     console.error('자주 클릭한 제휴처 조회 실패:', error);
@@ -114,7 +114,7 @@ export const getFavoritesStatistics = async (
       limit: limit.toString(),
     });
 
-    const response = await api.get(`/benefits/favorite?${params}`);
+    const response = await api.get(`/api/v1/benefits/favorite?${params}`);
     return response.data;
   } catch (error) {
     console.error('즐겨찾기 통계 조회 실패:', error);
@@ -139,7 +139,7 @@ export const getPartnerUsageStats = async (
       period: period.toString(),
     });
 
-    const response = await api.get(`/partners/usage?${params}`);
+    const response = await api.get(`/api/v1/partners/usage?${params}`);
     return response.data;
   } catch (error) {
     console.error('제휴처별 이용 통계 조회 실패:', error);

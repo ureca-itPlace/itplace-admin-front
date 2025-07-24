@@ -15,12 +15,12 @@ export interface ApiResponse<T = unknown> {
 
 // 로그인
 export const adminLogin = async (loginData: LoginRequest): Promise<ApiResponse<null>> => {
-  const response = await api.post('/auth/login', loginData, { withCredentials: true });
+  const response = await api.post('/api/v1/auth/login', loginData, { withCredentials: true });
   return response.data;
 };
 
 // 로그아웃
 export const adminLogout = async (): Promise<ApiResponse<null>> => {
-  const response = await api.post('/auth/logout', {}, { withCredentials: true });
+  const response = await api.post('/api/v1/auth/logout', {}, { withCredentials: true });
   return response.data;
 };
