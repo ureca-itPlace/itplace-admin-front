@@ -8,6 +8,7 @@ import DataTable from '../../../../components/common/DataTable';
 import ActionButton from '../../../../components/common/ActionButton';
 import Pagination from '../../../../components/common/Pagination';
 import MemberDetailModal from './components/MemberDetailModal';
+import { mockMemberUsage } from './data/mockData';
 import {
   Member,
   searchMembersWithPagination,
@@ -369,7 +370,7 @@ const MemberManagement = () => {
         isOpen={showPartnerModal}
         member={selectedMember}
         onClose={handleCloseModal}
-        partnerUsageData={[]}
+        partnerUsageData={selectedMember ? mockMemberUsage[selectedMember.userId] || [] : []}
       />
     </div>
   );

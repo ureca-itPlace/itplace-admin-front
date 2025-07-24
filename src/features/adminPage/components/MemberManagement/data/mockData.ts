@@ -1,3 +1,21 @@
+// 회원별 제휴처 이용내역 mock 데이터
+export interface PartnerUsage {
+  brand: string;
+  amount: string;
+  date: string;
+}
+
+export const mockMemberUsage: Record<number, PartnerUsage[]> = {
+  1: [
+    { brand: '스타벅스', amount: '2,000원', date: '2025-07-01' },
+    { brand: 'GS25', amount: '1,000원', date: '2025-07-10' },
+  ],
+  2: [{ brand: 'CGV', amount: '3,000원', date: '2025-07-03' }],
+  3: [{ brand: '이마트24', amount: '1,500원', date: '2025-07-05' }],
+  4: [{ brand: '파리바게트', amount: '2,500원', date: '2025-07-08' }],
+  5: [{ brand: '배스킨라빈스', amount: '1,200원', date: '2025-07-12' }],
+  // ... 필요시 추가
+};
 import { Member } from '../apis/MemberManagementApis';
 
 export const mockMembers: Member[] = [

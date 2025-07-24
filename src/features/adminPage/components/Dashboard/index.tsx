@@ -101,7 +101,7 @@ const Dashboard = () => {
           await Promise.all([
             getPartnersSearchRanking(2, 3, 5), // recentperiod, prevperiod, limit
             getMostClickedPartners(5), // limit
-            getFavoritesStatistics(4), // limit (Swagger default 4)
+            getFavoritesStatistics(5), // limit (Swagger default 4)
             getPartnerUsageStats(365), // period (일 단위, Swagger default 365)
           ]);
 

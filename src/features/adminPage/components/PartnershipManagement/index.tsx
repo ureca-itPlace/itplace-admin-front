@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { TbRefresh, TbExternalLink } from 'react-icons/tb';
+import { TbRefresh, TbExternalLink, TbChevronUp, TbChevronDown } from 'react-icons/tb';
 import { debounce } from 'lodash';
 import StatisticsCard from '../../../../components/common/StatisticsCard';
 import SearchBar from '../../../../components/common/SearchBar';
@@ -26,6 +26,11 @@ const PartnershipManagement = () => {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  // 정렬 상태
+  const [sortField, setSortField] = useState<'searchRank' | 'favoriteRank' | 'usageRank' | null>(
+    null
+  );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const itemsPerPage = 8;
 
   // 페이지네이션 정보 상태
@@ -214,6 +219,49 @@ const PartnershipManagement = () => {
     return <span className="text-body-2 font-medium">{benefitType}</span>;
   };
 
+  // 정렬 아이콘 렌더링 함수
+  const renderSortIcon = (field: 'searchRank' | 'favoriteRank' | 'usageRank') => {
+    if (sortField !== field) {
+      return (
+        <div className="flex flex-col ml-2">
+          <TbChevronUp size={16} className="text-grey05" />
+          <TbChevronDown size={16} className="text-grey05 -mt-1" />
+        </div>
+      );
+    }
+    if (sortDirection === 'asc') {
+      return (
+        <div className="flex flex-col ml-2">
+          <TbChevronUp size={16} className="text-orange04" />
+          <TbChevronDown size={16} className="text-grey05 -mt-1" />
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex flex-col ml-2">
+          <TbChevronUp size={16} className="text-grey05" />
+          <TbChevronDown size={16} className="text-orange04 -mt-1" />
+        </div>
+      );
+    }
+  };
+
+  // 정렬 핸들러
+  const handleSort = (field: 'searchRank' | 'favoriteRank' | 'usageRank') => {
+    if (sortField === field) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortField(null);
+        setSortDirection('asc');
+      }
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setCurrentPage(1);
+  };
+
   // 테이블 컬럼 정의
   const columns = [
     {
@@ -243,24 +291,60 @@ const PartnershipManagement = () => {
       key: 'searchRank',
       label: '검색 순위',
       width: '120px',
+      sortable: true,
+      headerRender: () => (
+        <button
+          onClick={() => handleSort('searchRank')}
+          className={`flex items-center justify-start transition-colors duration-150 ${
+            sortField === 'searchRank' ? 'text-orange04 rounded-[4px]' : 'text-grey05'
+          }`}
+        >
+          <span>검색 순위</span>
+          {renderSortIcon('searchRank')}
+        </button>
+      ),
       render: (value: unknown) => (
-        <span className="text-caption-1 text-left block">{value as number}위</span>
+        <span className="text-caption-1 font-medium text-left block">{value as number}위</span>
       ),
     },
     {
       key: 'favoriteRank',
       label: '즐겨찾기 순위',
       width: '120px',
+      sortable: true,
+      headerRender: () => (
+        <button
+          onClick={() => handleSort('favoriteRank')}
+          className={`flex items-center justify-start transition-colors duration-150 ${
+            sortField === 'favoriteRank' ? ' text-orange04 rounded-[4px]' : 'text-grey05'
+          }`}
+        >
+          <span>즐겨찾기 순위</span>
+          {renderSortIcon('favoriteRank')}
+        </button>
+      ),
       render: (value: unknown) => (
-        <span className="text-caption-1 text-left block">{value as number}위</span>
+        <span className="text-caption-1 font-medium text-left block">{value as number}위</span>
       ),
     },
     {
       key: 'usageRank',
       label: '이용 순위',
       width: '120px',
+      sortable: true,
+      headerRender: () => (
+        <button
+          onClick={() => handleSort('usageRank')}
+          className={`flex items-center justify-start transition-colors duration-150 ${
+            sortField === 'usageRank' ? ' text-orange04 rounded-[4px]' : 'text-grey05'
+          }`}
+        >
+          <span>이용 순위</span>
+          {renderSortIcon('usageRank')}
+        </button>
+      ),
       render: (value: unknown) => (
-        <span className="text-caption-1 text-left block">{value as number}위</span>
+        <span className="text-caption-1 font-medium text-left block">{value as number}위</span>
       ),
     },
     {
@@ -379,7 +463,19 @@ const PartnershipManagement = () => {
           </div>
         )}
         <DataTable
-          data={partners as unknown as Record<string, unknown>[]}
+          data={(() => {
+            if (!sortField) return partners as unknown as Record<string, unknown>[];
+            const sorted = [...partners].sort((a, b) => {
+              const aValue = a[sortField] as number;
+              const bValue = b[sortField] as number;
+              if (sortDirection === 'asc') {
+                return aValue - bValue;
+              } else {
+                return bValue - aValue;
+              }
+            });
+            return sorted as unknown as Record<string, unknown>[];
+          })()}
           columns={columns}
           onRowClick={(row) => handlePartnerDetailClick(row as unknown as Partner)}
           width={1410}

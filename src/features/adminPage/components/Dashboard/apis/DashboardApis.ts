@@ -122,7 +122,7 @@ export const getMostClickedPartners = async (
 
 // 즐겨찾기 통계 조회 함수
 export const getFavoritesStatistics = async (
-  limit: number = 4
+  limit: number = 5
 ): Promise<ApiResponse<FavoritesStatisticsResponse>> => {
   try {
     const params = new URLSearchParams({
