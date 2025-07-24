@@ -8,7 +8,6 @@ import DataTable from '../../../../components/common/DataTable';
 import ActionButton from '../../../../components/common/ActionButton';
 import Pagination from '../../../../components/common/Pagination';
 import MemberDetailModal from './components/MemberDetailModal';
-import { mockMemberUsage } from './data/mockData';
 import {
   Member,
   searchMembersWithPagination,
@@ -66,9 +65,13 @@ const MemberManagement = () => {
         setIsLoading(true);
         const statistics = await getMemberStatistics();
         setTotalMembers(statistics.totalUsers);
-        setLastUpdated('');
-
-        // 첫 페이지 데이터 로드
+        if (statistics.timestamp) {
+          const [date, timeRaw] = statistics.timestamp.split('T');
+          const time = timeRaw ? timeRaw.split('.')[0] : '';
+          setLastUpdated(`${date} ${time}`);
+        } else {
+          setLastUpdated('');
+        }
         await loadMembers(1);
       } catch (error) {
         console.error('초기 데이터 로드 실패:', error);
@@ -99,21 +102,30 @@ const MemberManagement = () => {
   const debouncedSearch = useMemo(
     () =>
       debounce((searchQuery: string) => {
-        setDebouncedSearchTerm(searchQuery);
-        searchMembers(searchQuery);
+        if (searchQuery.trim()) {
+          setDebouncedSearchTerm(searchQuery);
+          searchMembers(searchQuery);
+        }
       }, 500),
     [searchMembers]
   );
 
   // 검색어 변경 시 디바운스 적용
   useEffect(() => {
-    debouncedSearch(searchTerm);
+    if (searchTerm.trim()) {
+      debouncedSearch(searchTerm);
+    } else {
+      // 검색어가 비어있으면 디바운스 취소하고 일반 모드로 복귀
+      debouncedSearch.cancel();
+      setDebouncedSearchTerm('');
+      loadMembers(1);
+    }
 
     // cleanup 함수로 디바운스 취소
     return () => {
       debouncedSearch.cancel();
     };
-  }, [searchTerm, debouncedSearch]);
+  }, [searchTerm, debouncedSearch, loadMembers]);
 
   // 검색어 변경 시 페이지 초기화
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +138,9 @@ const MemberManagement = () => {
     if (type === '전체') {
       setSelectedMemberType(null);
     } else {
-      setSelectedMemberType(selectedMemberType === type ? null : type);
+      // UI 표시값을 API 값으로 변환
+      const apiValue = type === 'U+ 연동' ? 'LINKED' : 'STANDARD';
+      setSelectedMemberType(selectedMemberType === apiValue ? null : apiValue);
     }
     setCurrentPage(1);
   };
@@ -135,7 +149,9 @@ const MemberManagement = () => {
     if (grade === '전체') {
       setSelectedGrade(null);
     } else {
-      setSelectedGrade(selectedGrade === grade ? null : grade);
+      // UI 표시값을 API 값으로 변환
+      const apiValue = grade === '우수' ? 'BASIC' : grade;
+      setSelectedGrade(selectedGrade === apiValue ? null : apiValue);
     }
     setCurrentPage(1);
   };
@@ -180,7 +196,13 @@ const MemberManagement = () => {
       setIsLoading(true);
       const statistics = await getMemberStatistics();
       setTotalMembers(statistics.totalUsers);
-      setLastUpdated('');
+      if (statistics.timestamp) {
+        const [date, timeRaw] = statistics.timestamp.split('T');
+        const time = timeRaw ? timeRaw.split('.')[0] : '';
+        setLastUpdated(`${date} ${time}`);
+      } else {
+        setLastUpdated('');
+      }
       setSearchTerm('');
       setDebouncedSearchTerm('');
       setCurrentPage(1);
@@ -262,7 +284,12 @@ const MemberManagement = () => {
         { label: 'U+ 연동', value: 'U+ 연동' },
         { label: '일반', value: '일반' },
       ],
-      selectedValue: selectedMemberType,
+      selectedValue:
+        selectedMemberType === 'LINKED'
+          ? 'U+ 연동'
+          : selectedMemberType === 'STANDARD'
+            ? '일반'
+            : null,
       onSelect: handleMemberTypeFilter,
     },
     {
@@ -273,7 +300,7 @@ const MemberManagement = () => {
         { label: 'VIP', value: 'VIP' },
         { label: '우수', value: '우수' },
       ],
-      selectedValue: selectedGrade,
+      selectedValue: selectedGrade === 'BASIC' ? '우수' : selectedGrade,
       onSelect: handleGradeFilter,
     },
   ];
@@ -370,7 +397,6 @@ const MemberManagement = () => {
         isOpen={showPartnerModal}
         member={selectedMember}
         onClose={handleCloseModal}
-        partnerUsageData={selectedMember ? mockMemberUsage[selectedMember.id] || [] : []}
       />
     </div>
   );

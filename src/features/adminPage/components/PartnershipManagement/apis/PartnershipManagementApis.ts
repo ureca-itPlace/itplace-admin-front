@@ -1,5 +1,4 @@
 import api from '../../../../../apis/axiosInstance';
-import { getMockPartnersPage, searchMockPartners, mockPartnerStatistics } from '../data/mockData';
 
 // API 응답 타입
 export interface ApiResponse<T = unknown> {
@@ -65,14 +64,23 @@ export interface BenefitBatchRefreshResult {
   endTime: string;
 }
 
-// 제휴처 통계 타입 (단순 숫자로 변경)
-export interface BenefitStatistics {
-  totalBenefitCount: number;
+// 통신사 혜택 정보 타입
+export interface CarrierBenefitInfo {
+  carrierBenefitId: number;
+  partnerName: string;
+  benefitName: string;
+  mainCategory: 'VIP콕' | '기본 혜택';
+  category: string;
+  benefitType?: 'DISCOUNT' | 'FREE_GIFT';
+  benefitLimit?: string;
+  description?: string;
+  manual?: string;
+  lastUpdated?: string;
 }
 
 // 전체 제휴처 수 조회 API
 export const getTotalBenefitCount = async (): Promise<ApiResponse<number>> => {
-  const response = await api.get('/benefits/total');
+  const response = await api.get('/api/v1/benefits/total');
   return response.data;
 };
 
@@ -99,7 +107,7 @@ export const getAllPartners = async (
   if (type) params.append('type', type);
   if (keyword) params.append('keyword', keyword);
 
-  const response = await api.get(`/benefits?${params}`);
+  const response = await api.get(`/api/v1/benefits?${params}`);
   return response.data;
 };
 
@@ -116,7 +124,7 @@ export const searchBenefits = async (
 
 // 혜택 상세 조회 API
 export const getBenefitDetail = async (benefitId: number): Promise<ApiResponse<BenefitDetail>> => {
-  const response = await api.get(`/benefit/${benefitId}`);
+  const response = await api.get(`/api/v1/benefit/${benefitId}`);
   return response.data;
 };
 
@@ -125,68 +133,14 @@ export const updateBenefit = async (
   benefitId: number,
   benefitData: { benefitLimit?: string; manual?: string }
 ): Promise<ApiResponse<null>> => {
-  const response = await api.put(`/benefit/${benefitId}`, benefitData);
+  const response = await api.put(`/api/v1/benefit/${benefitId}`, benefitData);
   return response.data;
 };
-
-// 통신사 혜택 정보 타입
-export interface CarrierBenefitInfo {
-  carrierBenefitId: number;
-  partnerName: string;
-  benefitName: string;
-  mainCategory: 'VIP콕' | '기본 혜택';
-  category: string;
-  benefitType?: 'DISCOUNT' | 'FREE_GIFT';
-  benefitLimit?: string;
-  description?: string;
-  manual?: string;
-  lastUpdated?: string;
-}
 
 // 혜택 정보 배치 갱신 API
 export const refreshBenefitBatch = async (
   carrierBenefits: CarrierBenefitInfo[]
 ): Promise<ApiResponse<{ batchResult: BenefitBatchRefreshResult }>> => {
-  const response = await api.post('/benefits/batch-refresh', { carrierBenefits });
+  const response = await api.post('/api/v1/benefits/batch-refresh', { carrierBenefits });
   return response.data;
-};
-
-// 기존 함수들을 더미 데이터로 동작하도록 래핑
-export const getPartnersWithPagination = async (
-  page: number = 1,
-  itemsPerPage: number = 8,
-  category?: string,
-  benefitType?: string
-): Promise<{
-  data: Partner[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}> => {
-  // 더미 데이터 사용
-  return getMockPartnersPage(page, itemsPerPage, category, benefitType);
-};
-
-export const searchPartnersWithPagination = async (
-  keyword: string,
-  page: number = 1,
-  itemsPerPage: number = 8
-): Promise<{
-  data: Partner[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  itemsPerPage: number;
-}> => {
-  // 더미 데이터 사용
-  return searchMockPartners(keyword, page, itemsPerPage);
-};
-
-export const getPartnerStatistics = async (): Promise<{
-  totalPartners: number;
-  lastUpdated: string;
-}> => {
-  // 더미 데이터 사용
-  return mockPartnerStatistics;
 };

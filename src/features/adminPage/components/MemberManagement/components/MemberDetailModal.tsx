@@ -1,26 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../../../../../components/common/AdminModal';
-import { Member } from '../apis/MemberManagementApis';
-
-interface PartnerUsage {
-  brand: string;
-  amount: string;
-  date: string;
-}
+import { Member, getUserBenefitUsage, MembershipUsage } from '../apis/MemberManagementApis';
 
 interface MemberDetailModalProps {
   isOpen: boolean;
   member: Member | null;
   onClose: () => void;
-  partnerUsageData: PartnerUsage[];
 }
 
-const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
-  isOpen,
-  member,
-  onClose,
-  partnerUsageData,
-}) => {
+const MemberDetailModal: React.FC<MemberDetailModalProps> = ({ isOpen, member, onClose }) => {
+  const [membershipUsage, setMembershipUsage] = useState<MembershipUsage[]>([]);
+  const [membershipId, setMembershipId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 회원 상세 정보 로드
+  useEffect(() => {
+    const loadMemberDetail = async () => {
+      if (!member || !isOpen) return;
+
+      setIsLoading(true);
+      try {
+        const response = await getUserBenefitUsage(member.id);
+        setMembershipUsage(response.data.membershipUsage);
+        setMembershipId(response.data.membershipId);
+      } catch (error) {
+        console.error('회원 상세 정보 로드 실패:', error);
+        setMembershipUsage([]);
+        setMembershipId(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadMemberDetail();
+  }, [member, isOpen]);
   if (!member) return null;
 
   // 등급 변환 함수
@@ -42,7 +55,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
           <h4 className="text-title-2  mb-2">{member.name}</h4>
           <p className="text-body-0 text-grey05">
             {getGradeDisplay(member.grade)} | {getUserTypeDisplay(member.userType)} | 멤버십 번호:{' '}
-            <span className="text-body-0-bold">{member.id}</span>
+            <span className="text-body-0-bold">{membershipId || '없음'}</span>
           </p>
         </div>
 
@@ -59,17 +72,31 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
             </div>
           </div>
           <div className="overflow-y-auto" style={{ height: 'calc(100% - 48px)' }}>
-            {partnerUsageData.map((usage, index) => (
-              <div key={index} className="pl-[42px] py-4 border-b border-white">
-                <div className="grid grid-cols-12 gap-8">
-                  <div className="col-span-4 text-body-0 text-black truncate">{usage.brand}</div>
-                  <div className="col-span-4 text-body-0 text-black text-center ">
-                    {usage.amount}
-                  </div>
-                  <div className="col-span-4 text-body-0 text-black text-center ">{usage.date}</div>
-                </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-grey03">로딩 중...</div>
               </div>
-            ))}
+            ) : membershipUsage.length > 0 ? (
+              membershipUsage.map((usage, index) => (
+                <div key={index} className="pl-[42px] py-4 border-b border-white">
+                  <div className="grid grid-cols-12 gap-8">
+                    <div className="col-span-4 text-body-0 text-black truncate">
+                      {usage.benefitName}
+                    </div>
+                    <div className="col-span-4 text-body-0 text-black text-center ">
+                      {usage.discountAmount.toLocaleString()}원
+                    </div>
+                    <div className="col-span-4 text-body-0 text-black text-center ">
+                      {usage.usedAt}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-grey03">혜택 이용 내역이 없습니다.</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

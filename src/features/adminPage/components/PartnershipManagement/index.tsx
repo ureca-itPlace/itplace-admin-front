@@ -11,9 +11,9 @@ import Pagination from '../../../../components/common/Pagination';
 import PartnerDetailModal from './components/PartnerDetailModal';
 import {
   Partner,
-  searchPartnersWithPagination,
-  getPartnersWithPagination,
-  getPartnerStatistics,
+  getAllPartners,
+  searchBenefits,
+  getTotalBenefitCount,
 } from './apis/PartnershipManagementApis';
 
 const PartnershipManagement = () => {
@@ -48,22 +48,32 @@ const PartnershipManagement = () => {
     async (page: number = 1) => {
       setIsLoading(true);
       try {
-        const response = await getPartnersWithPagination(
-          page,
-          itemsPerPage,
+        // mainCategory 매핑
+        const mainCategory = benefitToggle === 'vipkok' ? 'VIP_COCK' : 'BASIC_BENEFIT';
+
+        const response = await getAllPartners(
+          mainCategory,
           selectedCategory || undefined,
-          selectedBenefitType || undefined
+          selectedBenefitType as 'FREE' | 'DISCOUNT' | undefined,
+          undefined, // keyword
+          page - 1, // API는 0부터 시작
+          itemsPerPage,
+          'id',
+          'asc'
         );
-        setPartners(response.data);
-        setTotalItems(response.totalItems);
-        setCurrentPage(response.currentPage);
+
+        if (response.data) {
+          setPartners(response.data.content);
+          setTotalItems(response.data.totalElements);
+          setCurrentPage(page);
+        }
       } catch (error) {
         console.error('제휴처 데이터 로드 실패:', error);
       } finally {
         setIsLoading(false);
       }
     },
-    [selectedCategory, selectedBenefitType]
+    [selectedCategory, selectedBenefitType, benefitToggle]
   );
 
   // 초기 데이터 로드
@@ -71,9 +81,12 @@ const PartnershipManagement = () => {
     const loadInitialData = async () => {
       try {
         setIsLoading(true);
-        const statistics = await getPartnerStatistics();
-        setTotalPartners(statistics.totalPartners);
-        setLastUpdated(statistics.lastUpdated);
+        // 전체 제휴처 수 조회
+        const countResponse = await getTotalBenefitCount();
+        if (countResponse.data) {
+          setTotalPartners(countResponse.data);
+          setLastUpdated(new Date().toISOString());
+        }
 
         // 첫 페이지 데이터 로드
         await loadPartners(1);
@@ -91,10 +104,19 @@ const PartnershipManagement = () => {
   const searchPartners = useCallback(async (searchQuery: string) => {
     setIsLoading(true);
     try {
-      const response = await searchPartnersWithPagination(searchQuery, 1, itemsPerPage);
-      setPartners(response.data);
-      setTotalItems(response.totalItems);
-      setCurrentPage(1);
+      const response = await searchBenefits(
+        searchQuery,
+        0, // API는 0부터 시작
+        itemsPerPage,
+        'id',
+        'asc'
+      );
+
+      if (response.data) {
+        setPartners(response.data.content);
+        setTotalItems(response.data.totalElements);
+        setCurrentPage(1);
+      }
     } catch (error) {
       console.error('검색 API 호출 실패:', error);
     } finally {
@@ -114,13 +136,20 @@ const PartnershipManagement = () => {
 
   // 검색어 변경 시 디바운스 적용
   useEffect(() => {
-    debouncedSearch(searchTerm);
+    if (searchTerm.trim()) {
+      debouncedSearch(searchTerm);
+    } else {
+      // 검색어가 비어있으면 디바운스 취소하고 일반 모드로 복귀
+      debouncedSearch.cancel();
+      setDebouncedSearchTerm('');
+      loadPartners(1);
+    }
 
     // cleanup 함수로 디바운스 취소
     return () => {
       debouncedSearch.cancel();
     };
-  }, [searchTerm, debouncedSearch]);
+  }, [searchTerm, debouncedSearch, loadPartners]);
 
   // 검색어 변경 시 페이지 초기화
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +162,9 @@ const PartnershipManagement = () => {
     if (category === '전체') {
       setSelectedCategory(null);
     } else {
-      setSelectedCategory(selectedCategory === category ? null : category);
+      // '액티비티' 선택 시 API에는 '엑티비티'로 전달
+      const apiCategory = category === '액티비티' ? '엑티비티' : category;
+      setSelectedCategory(selectedCategory === apiCategory ? null : apiCategory);
     }
     setCurrentPage(1);
   };
@@ -142,7 +173,10 @@ const PartnershipManagement = () => {
     if (benefitType === '전체') {
       setSelectedBenefitType(null);
     } else {
-      setSelectedBenefitType(selectedBenefitType === benefitType ? null : benefitType);
+      // 한글 → API 값 변환
+      const apiValue =
+        benefitType === '증정' ? 'FREE' : benefitType === '할인' ? 'DISCOUNT' : benefitType;
+      setSelectedBenefitType(selectedBenefitType === apiValue ? null : apiValue);
     }
     setCurrentPage(1);
   };
@@ -161,14 +195,19 @@ const PartnershipManagement = () => {
       const searchPagination = async () => {
         setIsLoading(true);
         try {
-          const response = await searchPartnersWithPagination(
+          const response = await searchBenefits(
             debouncedSearchTerm,
-            pageNumber,
-            itemsPerPage
+            pageNumber - 1, // API는 0부터 시작
+            itemsPerPage,
+            'id',
+            'asc'
           );
-          setPartners(response.data);
-          setTotalItems(response.totalItems);
-          setCurrentPage(pageNumber);
+
+          if (response.data) {
+            setPartners(response.data.content);
+            setTotalItems(response.data.totalElements);
+            setCurrentPage(pageNumber);
+          }
         } catch (error) {
           console.error('검색 페이지네이션 실패:', error);
         } finally {
@@ -185,9 +224,12 @@ const PartnershipManagement = () => {
   const handleRefresh = async () => {
     try {
       setIsLoading(true);
-      const statistics = await getPartnerStatistics();
-      setTotalPartners(statistics.totalPartners);
-      setLastUpdated(statistics.lastUpdated);
+      // 전체 제휴처 수 조회
+      const countResponse = await getTotalBenefitCount();
+      if (countResponse.data) {
+        setTotalPartners(countResponse.data);
+        setLastUpdated(new Date().toISOString());
+      }
       setSearchTerm('');
       setDebouncedSearchTerm('');
       setCurrentPage(1);
@@ -219,7 +261,11 @@ const PartnershipManagement = () => {
 
   // 상태 렌더링 함수
   const renderBenefitType = (benefitType: string) => {
-    return <span className="text-body-2 font-medium">{benefitType}</span>;
+    let label = '';
+    if (benefitType === 'FREE') label = '증정';
+    else if (benefitType === 'DISCOUNT') label = '할인';
+    else label = benefitType;
+    return <span className="text-body-2 font-medium">{label}</span>;
   };
 
   // 정렬 아이콘 렌더링 함수
@@ -283,7 +329,16 @@ const PartnershipManagement = () => {
       ),
     },
     { key: 'benefitName', label: '제휴처명', width: '240px' },
-    { key: 'mainCategory', label: '카테고리', width: '120px' },
+    {
+      key: 'category',
+      label: '카테고리',
+      width: '120px',
+      render: (value: unknown) => {
+        const strValue = value as string;
+        const label = strValue === '엑티비티' ? '액티비티' : strValue;
+        return <span className="text-body-2 font-medium">{label}</span>;
+      },
+    },
     {
       key: 'type',
       label: '혜택 유형',
@@ -383,7 +438,7 @@ const PartnershipManagement = () => {
         { label: '교육', value: '교육' },
         { label: '여행/교통', value: '여행/교통' },
       ],
-      selectedValue: selectedCategory,
+      selectedValue: selectedCategory === '엑티비티' ? '액티비티' : selectedCategory,
       onSelect: handleCategoryFilter,
     },
     {
@@ -393,7 +448,12 @@ const PartnershipManagement = () => {
         { label: '할인', value: '할인' },
         { label: '증정', value: '증정' },
       ],
-      selectedValue: selectedBenefitType,
+      selectedValue:
+        selectedBenefitType === 'FREE'
+          ? '증정'
+          : selectedBenefitType === 'DISCOUNT'
+            ? '할인'
+            : selectedBenefitType,
       onSelect: handleBenefitTypeFilter,
     },
   ];

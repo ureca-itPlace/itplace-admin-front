@@ -33,6 +33,7 @@ export interface Member {
 // 회원 통계 응답 타입 (단순 숫자로 변경)
 export interface MemberStatistics {
   totalUsers: number;
+  timestamp?: string;
 }
 
 // 배치 갱신 결과 타입
@@ -65,7 +66,7 @@ export interface UserDetail {
 
 // 전체 사용자 수 조회 API
 export const getTotalUserCount = async (): Promise<ApiResponse<number>> => {
-  const response = await api.get('/users/total');
+  const response = await api.get('/api/v1/users/total');
   return response.data;
 };
 
@@ -86,7 +87,7 @@ export const getAllUsers = async (
   if (userType) params.append('userType', userType);
   if (grade) params.append('grade', grade);
 
-  const response = await api.get(`/users?${params}`);
+  const response = await api.get(`/api/v1/users?${params}`);
   return response.data;
 };
 
@@ -102,13 +103,13 @@ export const searchUsers = async (
     size: size.toString(),
   });
 
-  const response = await api.get(`/users/search?${params}`);
+  const response = await api.get(`/api/v1/users/search?${params}`);
   return response.data;
 };
 
 // 사용자 혜택 이용내역 조회 API
 export const getUserBenefitUsage = async (userId: number): Promise<ApiResponse<UserDetail>> => {
-  const response = await api.get(`/users/${userId}`);
+  const response = await api.get(`/api/v1/users/${userId}`);
   return response.data;
 };
 
@@ -128,7 +129,7 @@ export interface CarrierUserInfo {
 export const refreshUserBatch = async (
   carrierUsers: CarrierUserInfo[]
 ): Promise<ApiResponse<{ batchResult: BatchRefreshResult }>> => {
-  const response = await api.post('/users/batch-refresh', { carrierUsers });
+  const response = await api.post('/api/v1/users/batch-refresh', { carrierUsers });
   return response.data;
 };
 
@@ -145,8 +146,26 @@ export const getMembersWithPagination = async (
   currentPage: number;
   itemsPerPage: number;
 }> => {
-  // 더미 데이터 사용
-  return getMockMembersPage(page, itemsPerPage, userType, grade);
+  try {
+    const response = await getAllUsers(
+      userType as 'LINKED' | 'STANDARD' | undefined,
+      grade as 'VVIP' | 'VIP' | 'BASIC' | undefined,
+      page - 1, // API는 0부터 시작하므로 -1
+      itemsPerPage
+    );
+
+    return {
+      data: response.data.content,
+      totalItems: response.data.totalElements,
+      totalPages: response.data.totalPages,
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+    };
+  } catch (error) {
+    console.error('Failed to fetch members:', error);
+    // 에러 발생시 더미 데이터 반환
+    return getMockMembersPage(page, itemsPerPage, userType, grade);
+  }
 };
 
 export const searchMembersWithPagination = async (
@@ -160,11 +179,37 @@ export const searchMembersWithPagination = async (
   currentPage: number;
   itemsPerPage: number;
 }> => {
-  // 더미 데이터 사용
-  return searchMockMembers(keyword, page, itemsPerPage);
+  try {
+    const response = await searchUsers(
+      keyword,
+      page - 1, // API는 0부터 시작하므로 -1
+      itemsPerPage
+    );
+
+    return {
+      data: response.data.content,
+      totalItems: response.data.totalElements,
+      totalPages: response.data.totalPages,
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+    };
+  } catch (error) {
+    console.error('Failed to search members:', error);
+    // 에러 발생시 더미 데이터 반환
+    return searchMockMembers(keyword, page, itemsPerPage);
+  }
 };
 
 export const getMemberStatistics = async (): Promise<MemberStatistics> => {
-  // 더미 데이터 사용
-  return mockMemberStatistics;
+  try {
+    const response = await getTotalUserCount();
+    return {
+      totalUsers: response.data,
+      timestamp: response.timestamp,
+    };
+  } catch (error) {
+    console.error('Failed to fetch member statistics:', error);
+    // 에러 발생시 더미 데이터 반환
+    return mockMemberStatistics;
+  }
 };

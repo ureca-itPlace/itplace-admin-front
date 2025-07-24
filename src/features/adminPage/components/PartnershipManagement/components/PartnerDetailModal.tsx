@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../../../../../components/common/AdminModal';
-import { Partner } from '../apis/PartnershipManagementApis';
+import {
+  Partner,
+  getBenefitDetail,
+  updateBenefit,
+  BenefitDetail,
+} from '../apis/PartnershipManagementApis';
 
 interface EditingSectionProps {
   label: string;
@@ -48,14 +53,51 @@ interface PartnerDetailModalProps {
 
 const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [benefitDetail, setBenefitDetail] = useState<BenefitDetail | null>(null);
   const [editData, setEditData] = useState({
-    benefitContent:
-      '① VVIP/VIP: 4천원 할인\n우수: 2천원 할인\n② 오리지널/카라멜팝콘 L 4천원 구매권\nor 콤보 3천원 할인권(예매 건당 1매)',
-    benefitInfo:
-      'VVIP/VIP 등급 정보\nVIP관 내 무료예매 연3회/1+1예매 연9회(총 12회)\n(월 1회 사용 가능, CGV/메가박스 중 택 1)',
-    usageMethod:
-      '메가박스 웹/앱 > 영화예매 > 제휴포인트 > U+멤버십 > VIP콕 할인 > 멤버십 조회 > VIP콕 3개 헤택 중 1개 선택 > 예매\n\n*꼭 확인하세요\n- VIP콕 무료/1+1 혜택은 2D, 일반컨텐츠에 한하여 적용 가능하며, 일반관, 컴포트관만 예매 할 수 있습니다.- VIP콕 특별관 6천원 할인 혜택은 더부티크, Dolby Atmos, 더부티크스위트, Dolby Cinema, MX4D관에 한하여 적용 가능합니다.',
+    benefitContent: '',
+    benefitInfo: '',
+    usageMethod: '',
   });
+
+  // 혜택 상세 정보 로드
+  const loadBenefitDetail = useCallback(async () => {
+    if (!partner) return;
+
+    setIsLoading(true);
+    try {
+      const response = await getBenefitDetail(partner.benefitId);
+      if (response.data) {
+        setBenefitDetail(response.data);
+        // API 데이터를 UI 필드에 매핑
+        setEditData({
+          benefitContent: response.data.benefitLimit || '',
+          benefitInfo: response.data.description || '',
+          usageMethod: response.data.manual || '',
+        });
+      }
+    } catch (error) {
+      console.error('혜택 상세 정보 로드 실패:', error);
+      // 에러 시 기본 데이터 설정
+      setEditData({
+        benefitContent:
+          '① VVIP/VIP: 4천원 할인\n우수: 2천원 할인\n② 오리지널/카라멜팝콘 L 4천원 구매권\nor 콤보 3천원 할인권(예매 건당 1매)',
+        benefitInfo:
+          'VVIP/VIP 등급 정보\nVIP관 내 무료예매 연3회/1+1예매 연9회(총 12회)\n(월 1회 사용 가능, CGV/메가박스 중 택 1)',
+        usageMethod:
+          '메가박스 웹/앱 > 영화예매 > 제휴포인트 > U+멤버십 > VIP콕 할인 > 멤버십 조회 > VIP콕 3개 헤택 중 1개 선택 > 예매\n\n*꼭 확인하세요\n- VIP콕 무료/1+1 혜택은 2D, 일반컨텐츠에 한하여 적용 가능하며, 일반관, 컴포트관만 예매 할 수 있습니다.- VIP콕 특별관 6천원 할인 혜택은 더부티크, Dolby Atmos, 더부티크스위트, Dolby Cinema, MX4D관에 한하여 적용 가능합니다.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [partner]);
+
+  useEffect(() => {
+    if (isOpen && partner) {
+      loadBenefitDetail();
+    }
+  }, [isOpen, partner, loadBenefitDetail]);
 
   if (!partner) return null;
 
@@ -63,23 +105,38 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    // 저장 로직 추가
-    console.log('저장된 데이터:', editData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (!partner) return;
+
+    setIsLoading(true);
+    try {
+      // UI 데이터를 API 형식으로 매핑
+      const apiData = {
+        benefitLimit: editData.benefitContent,
+        manual: editData.usageMethod,
+      };
+      await updateBenefit(partner.benefitId, apiData);
+      console.log('혜택 정보 수정 완료');
+      setIsEditing(false);
+      // 상세 정보 다시 로드
+      await loadBenefitDetail();
+    } catch (error) {
+      console.error('혜택 정보 수정 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     // 원래 데이터로 복원
-    setEditData({
-      benefitContent:
-        '① VVIP/VIP: 4천원 할인\n우수: 2천원 할인\n② 오리지널/카라멜팝콘 L 4천원 구매권\nor 콤보 3천원 할인권(예매 건당 1매)',
-      benefitInfo:
-        'VVIP/VIP 등급 정보\nVIP관 내 무료예매 연3회/1+1예매 연9회(총 12회)\n(월 1회 사용 가능, CGV/메가박스 중 택 1)',
-      usageMethod:
-        '메가박스 웹/앱 > 영화예매 > 제휴포인트 > U+멤버십 > VIP콕 할인 > 멤버십 조회 > VIP콕 3개 헤택 중 1개 선택 > 예매\n\n*꼭 확인하세요\n- VIP콕 무료/1+1 혜택은 2D, 일반컨텐츠에 한하여 적용 가능하며, 일반관, 컴포트관만 예매 할 수 있습니다.- VIP콕 특별관 6천원 할인 혜택은 더부티크, Dolby Atmos, 더부티크스위트, Dolby Cinema, MX4D관에 한하여 적용 가능합니다.',
-    });
+    if (benefitDetail) {
+      setEditData({
+        benefitContent: benefitDetail.benefitLimit || '',
+        benefitInfo: benefitDetail.description || '',
+        usageMethod: benefitDetail.manual || '',
+      });
+    }
   };
 
   const handleInputChange = (field: keyof typeof editData, value: string) => {
@@ -94,49 +151,59 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
       <div className="relative h-full flex flex-col">
         {/* 내용 스크롤 영역 */}
         <div className="flex-1 overflow-y-auto p-6">
-          {/* 브랜드 정보 */}
-          <div className="flex items-center justify-between mb-[28px]">
-            <div className="flex items-center ml-[16px]">
-              <div>
-                <h4 className="text-title-2 text-black mb-1">{partner.benefitName}</h4>
-                <p className="text-body-0 text-grey05 mt-1">
-                  영화보다 멋진 당신의 일상을 위하여, 라이프스타일 매거진스!
-                </p>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="text-gray-500">로딩 중...</div>
+            </div>
+          ) : (
+            <>
+              {/* 브랜드 정보 */}
+              <div className="flex items-center justify-between mb-[28px]">
+                <div className="flex items-center ml-[16px]">
+                  <div>
+                    <h4 className="text-title-2 text-black mb-1">{partner.benefitName}</h4>
+                    <p className="text-body-0 text-grey05 mt-1">
+                      영화보다 멋진 당신의 일상을 위하여, 라이프스타일 매거진스!
+                    </p>
+                  </div>
+                </div>
+                <div className="w-[120px] h-[120px] bg-white flex items-center justify-center">
+                  <img
+                    src={partner.image}
+                    alt={`${partner.benefitName} 로고`}
+                    className="w-[120px] h-[120px] object-contain"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="w-[120px] h-[120px]  bg-white  flex items-center justify-center">
-              <img
-                src={partner.image}
-                alt={`${partner.benefitName} 로고`}
-                className="w-[120px] h-[120px] object-contain"
+
+              {/*제공 혜택 섹션*/}
+              <EditingSection
+                label="제공 횟수"
+                value={editData.benefitInfo}
+                onChange={(v) => handleInputChange('benefitInfo', v)}
+                placeholder="제공 횟수 정보를 입력하세요"
+                isEditing={isEditing}
               />
-            </div>
-          </div>
-          {/*제공 혜택 섹션*/}
-          <EditingSection
-            label="제공 횟수"
-            value={editData.benefitInfo}
-            onChange={(v) => handleInputChange('benefitInfo', v)}
-            placeholder="제공 횟수 정보를 입력하세요"
-            isEditing={isEditing}
-          />
-          {/*혜택 내용 섹션*/}
-          <EditingSection
-            label="혜택 내용"
-            value={editData.benefitContent}
-            onChange={(v) => handleInputChange('benefitContent', v)}
-            placeholder="혜택 내용을 입력하세요"
-            isEditing={isEditing}
-          />
-          {/*이용방법 섹션*/}
-          <EditingSection
-            label="이용 방법"
-            value={editData.usageMethod}
-            onChange={(v) => handleInputChange('usageMethod', v)}
-            placeholder="이용 방법을 입력하세요"
-            isEditing={isEditing}
-          />
+              {/*혜택 내용 섹션*/}
+              <EditingSection
+                label="혜택 내용"
+                value={editData.benefitContent}
+                onChange={(v) => handleInputChange('benefitContent', v)}
+                placeholder="혜택 내용을 입력하세요"
+                isEditing={isEditing}
+              />
+              {/*이용방법 섹션*/}
+              <EditingSection
+                label="이용 방법"
+                value={editData.usageMethod}
+                onChange={(v) => handleInputChange('usageMethod', v)}
+                placeholder="이용 방법을 입력하세요"
+                isEditing={isEditing}
+              />
+            </>
+          )}
         </div>
+
         {/* 하단 고정 버튼 */}
         <div className="flex justify-center py-2 mt-2 gap-3">
           {isEditing ? (
