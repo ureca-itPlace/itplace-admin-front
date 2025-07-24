@@ -31,9 +31,7 @@ const RankingList = ({
             }}
           >
             <div className="flex items-center gap-3">
-              <span className="text-body-1 text-title-6 text-grey05 w-4 mr-[37px]">
-                {index + 1}
-              </span>
+              <span className="text-body-1 text-grey05 w-4 mr-[37px]">{index + 1}</span>
               <span className="text-body-1">{item.partnerName}</span>
             </div>
             <div className="flex items-center gap-2">
