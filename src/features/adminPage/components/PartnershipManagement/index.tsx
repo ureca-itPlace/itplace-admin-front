@@ -432,6 +432,7 @@ const PartnershipManagement = () => {
       title: '카테고리',
       options: [
         { label: '전체', value: '전체' },
+        { label: 'APP/기기', value: 'APP/기기' },
         { label: '액티비티', value: '액티비티' },
         { label: '뷰티/건강', value: '뷰티/건강' },
         { label: '쇼핑', value: '쇼핑' },
