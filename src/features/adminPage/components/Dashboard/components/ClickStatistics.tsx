@@ -31,7 +31,7 @@ const renderCustomizedLabel = (props: CustomPieLabelProps) => {
       fill="white"
       textAnchor="middle"
       dominantBaseline="central"
-      className="text-body-4"
+      className="text-body-4 max-md:text-body-5"
     >
       {typeof value === 'number' ? `${value.toLocaleString()}회` : ''}
     </text>
@@ -46,20 +46,23 @@ const ClickStatistics = ({
 }: ClickStatisticsProps) => {
   return (
     <div className={`bg-white p-6 rounded-[18px] ${className}`}>
-      <h3 className="text-title-4  mb-4">
+      <h3 className="text-title-4 max-md:text-title-6 mb-4">
         {title}
-        <span className="text-body-1  text-grey04 block mt-[12px]">{subtitle}</span>
+        <span className="max-md:block text-body-1 max-md:text-body-3 text-grey04 ml-3 max-md:ml-0 mt-1">
+          {subtitle}
+        </span>
       </h3>
       <div className="flex items-center">
-        <div className="w-64 h-64">
+        <div className="w-64 h-64 max-md:w-[100px] max-md:h-[100px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={40}
-                outerRadius={100}
+                // innerRadius와 outerRadius를 퍼센트 값으로 변경
+                innerRadius="40%"
+                outerRadius="100%"
                 paddingAngle={5}
                 dataKey="clickCount"
                 labelLine={false}
@@ -76,9 +79,14 @@ const ClickStatistics = ({
           <div className="space-y-4">
             {data.map((item, index) => (
               <div key={index} className="flex items-center gap-3">
-                <div className="w-4 h-4" style={{ backgroundColor: item.color }}></div>
+                <div
+                  className="w-4 h-4 max-md:w-2 max-md:h-2"
+                  style={{ backgroundColor: item.color }}
+                ></div>
                 <div className="flex-1">
-                  <div className="text-body-1 text-grey04">{item.partnerName}</div>
+                  <div className="text-body-1 max-md:text-body-3 text-grey04">
+                    {item.partnerName}
+                  </div>
                 </div>
               </div>
             ))}
