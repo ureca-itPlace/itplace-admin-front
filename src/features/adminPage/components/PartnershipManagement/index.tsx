@@ -85,7 +85,9 @@ const PartnershipManagement = () => {
         const countResponse = await getTotalBenefitCount();
         if (countResponse.data) {
           setTotalPartners(countResponse.data);
-          setLastUpdated(new Date().toISOString());
+          // ISO 문자열에서 'T'를 공백으로 치환하여 날짜와 시간 분리
+          const isoString = new Date().toISOString();
+          setLastUpdated(isoString.replace('T', ' ').split('.')[0]);
         }
 
         // 첫 페이지 데이터 로드
@@ -228,7 +230,8 @@ const PartnershipManagement = () => {
       const countResponse = await getTotalBenefitCount();
       if (countResponse.data) {
         setTotalPartners(countResponse.data);
-        setLastUpdated(new Date().toISOString());
+        const isoString = new Date().toISOString();
+        setLastUpdated(isoString.replace('T', ' ').split('.')[0]);
       }
       setSearchTerm('');
       setDebouncedSearchTerm('');
