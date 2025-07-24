@@ -15,17 +15,11 @@ const MobileHeader = ({
   backgroundColor = 'bg-purple06',
   onMenuClick,
 }: MobileHeaderProps) => {
-
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-
-
   const handleMenuClick = () => {
-
     onMenuClick?.();
   };
-
-
 
   return (
     <>
