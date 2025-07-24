@@ -11,9 +11,21 @@ interface UsageStatisticsProps {
 
 const CustomTick = (props: { x: number; y: number; payload: { value: string } }) => {
   const { x, y, payload } = props;
+  const maxLength = 8;
+  const text = payload.value;
+  const isLong = text.length > maxLength;
+  const displayText = isLong ? text.slice(0, maxLength) + '...' : text;
   return (
-    <text x={x} y={y} dy={20} textAnchor="middle" className="text-black text-body-2">
-      {payload.value}
+    <text
+      x={x}
+      y={y}
+      dy={20}
+      textAnchor="middle"
+      className="text-black text-body-2"
+      style={{ cursor: isLong ? 'pointer' : 'default' }}
+    >
+      {displayText}
+      {isLong && <title>{text}</title>}
     </text>
   );
 };

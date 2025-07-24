@@ -1,7 +1,7 @@
 // src/components/MobileHeader.tsx
 import { useState } from 'react';
-import { TbMenu2, TbX } from 'react-icons/tb';
-import { useNavigate, Link } from 'react-router-dom';
+import { TbMenu2 } from 'react-icons/tb';
+
 import Modal from './Modal';
 
 interface MobileHeaderProps {
@@ -15,19 +15,17 @@ const MobileHeader = ({
   backgroundColor = 'bg-purple06',
   onMenuClick,
 }: MobileHeaderProps) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const navigate = useNavigate();
+
 
   const handleMenuClick = () => {
-    setIsSidebarOpen(true);
+
     onMenuClick?.();
   };
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
+
 
   return (
     <>
