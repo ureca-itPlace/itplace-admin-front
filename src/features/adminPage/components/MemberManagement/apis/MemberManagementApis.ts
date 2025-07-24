@@ -21,8 +21,8 @@ export interface PagedResponse<T> {
 
 // 회원 데이터 타입 (API 응답 구조에 맞춤)
 export interface Member {
-  userId: number;
-  userName: string;
+  id: number; // userId -> id로 변경
+  name: string; // userName -> name으로 변경
   email: string;
   phoneNumber: string;
   birthday: string;
@@ -30,12 +30,9 @@ export interface Member {
   userType: 'LINKED' | 'STANDARD';
 }
 
-// 회원 통계 응답 타입
+// 회원 통계 응답 타입 (단순 숫자로 변경)
 export interface MemberStatistics {
   totalUsers: number;
-  basicCount: number;
-  vipCount: number;
-  vvipCount: number;
 }
 
 // 배치 갱신 결과 타입
@@ -50,23 +47,24 @@ export interface BatchRefreshResult {
   endTime: string;
 }
 
-// 사용자 혜택 이용내역 타입
+// 사용자 혜택 이용내역 타입 (필드명 변경)
 export interface MembershipUsage {
-  partnerName: string;
-  usageDate: string;
+  benefitId: number;
+  benefitName: string;
+  usedAt: string; // usageDate -> usedAt으로 변경
   discountAmount: number;
 }
 
 export interface UserDetail {
   userId: number;
   userName: string;
-  grade: string;
-  membershipId: number;
+  membershipId: string | null; // string으로 변경
+  membershipGrade: string | null;
   membershipUsage: MembershipUsage[];
 }
 
 // 전체 사용자 수 조회 API
-export const getTotalUserCount = async (): Promise<ApiResponse<MemberStatistics>> => {
+export const getTotalUserCount = async (): Promise<ApiResponse<number>> => {
   const response = await api.get('/users/total');
   return response.data;
 };

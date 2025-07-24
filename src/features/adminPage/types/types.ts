@@ -9,6 +9,7 @@ export interface WishlistItem {
   partnerName: string;
   favoriteCount: number;
   color: string;
+  mainCategory?: string;
 }
 
 export interface ClickDataItem {

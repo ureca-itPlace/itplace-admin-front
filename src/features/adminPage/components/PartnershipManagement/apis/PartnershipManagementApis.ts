@@ -22,10 +22,10 @@ export interface PagedResponse<T> {
 // 제휴처 데이터 타입 (API 응답 구조에 맞춤)
 export interface Partner {
   benefitId: number;
-  partnerName: string;
+  benefitName: string; // partnerName -> benefitName으로 변경
   mainCategory: string;
   category: string;
-  type: '증정' | '할인';
+  type: 'FREE' | 'DISCOUNT'; // 영문으로 변경
   image: string;
   searchRank: number;
   favoriteRank: number;
@@ -34,7 +34,7 @@ export interface Partner {
 
 // 혜택 등급별 상세 정보 타입
 export interface TierBenefit {
-  grade: 'BASIC' | 'VIP' | 'VVIP' | 'VIP콕';
+  grade: 'BASIC' | 'VIP' | 'VVIP';
   context: string;
   isAll: boolean;
 }
@@ -65,54 +65,53 @@ export interface BenefitBatchRefreshResult {
   endTime: string;
 }
 
-// 제휴처 통계 타입
+// 제휴처 통계 타입 (단순 숫자로 변경)
 export interface BenefitStatistics {
   totalBenefitCount: number;
 }
 
 // 전체 제휴처 수 조회 API
-export const getTotalBenefitCount = async (): Promise<ApiResponse<BenefitStatistics>> => {
+export const getTotalBenefitCount = async (): Promise<ApiResponse<number>> => {
   const response = await api.get('/benefits/total');
   return response.data;
 };
 
 // 전체 제휴처 목록 조회 API
 export const getAllPartners = async (
+  mainCategory?: 'BASIC_BENEFIT' | 'VIP_COCK',
   category?: string,
-  type?: '증정' | '할인',
+  type?: 'FREE' | 'DISCOUNT',
+  keyword?: string,
   page: number = 0,
   size: number = 8,
-  sort: string = 'id,asc'
+  sortBy: string = 'id',
+  direction: string = 'asc'
 ): Promise<ApiResponse<PagedResponse<Partner>>> => {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
-    sort,
+    sortBy,
+    direction,
   });
 
+  if (mainCategory) params.append('mainCategory', mainCategory);
   if (category) params.append('category', category);
   if (type) params.append('type', type);
+  if (keyword) params.append('keyword', keyword);
 
   const response = await api.get(`/benefits?${params}`);
   return response.data;
 };
 
-// 제휴처 검색 API
+// 제휴처 검색 API (일반 목록 조회와 동일하게 처리)
 export const searchBenefits = async (
   keyword: string,
   page: number = 0,
   size: number = 8,
-  sort: string = 'id,asc'
+  sortBy: string = 'id',
+  direction: string = 'asc'
 ): Promise<ApiResponse<PagedResponse<Partner>>> => {
-  const params = new URLSearchParams({
-    keyword,
-    page: page.toString(),
-    size: size.toString(),
-    sort,
-  });
-
-  const response = await api.get(`/benefits/search?${params}`);
-  return response.data;
+  return getAllPartners(undefined, undefined, undefined, keyword, page, size, sortBy, direction);
 };
 
 // 혜택 상세 조회 API

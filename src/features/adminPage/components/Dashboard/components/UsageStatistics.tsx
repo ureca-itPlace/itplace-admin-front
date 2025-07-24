@@ -6,8 +6,7 @@ interface UsageStatisticsProps {
   subtitle: string;
   data: UsageDataItem[];
   legends: LegendItem[];
-  width?: number;
-  height?: number;
+  className?: string;
 }
 
 const CustomTick = (props: { x: number; y: number; payload: { value: string } }) => {
@@ -24,11 +23,10 @@ const UsageStatistics = ({
   subtitle,
   data,
   legends,
-  width = 836,
-  height = 382,
+  className = 'w-[836px] h-[382px] max-md:w-full max-md:h-auto',
 }: UsageStatisticsProps) => {
   return (
-    <div className="bg-white p-6 rounded-[18px]" style={{ width, height }}>
+    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-title-4 ">
           {title}

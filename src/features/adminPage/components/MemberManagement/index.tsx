@@ -221,7 +221,7 @@ const MemberManagement = () => {
         return userType === 'LINKED' ? 'U+ 연동' : '일반';
       },
     },
-    { key: 'userName', label: '회원명', width: '140px' },
+    { key: 'name', label: '회원명', width: '140px' },
     {
       key: 'grade',
       label: '등급',
@@ -370,7 +370,7 @@ const MemberManagement = () => {
         isOpen={showPartnerModal}
         member={selectedMember}
         onClose={handleCloseModal}
-        partnerUsageData={selectedMember ? mockMemberUsage[selectedMember.userId] || [] : []}
+        partnerUsageData={selectedMember ? mockMemberUsage[selectedMember.id] || [] : []}
       />
     </div>
   );

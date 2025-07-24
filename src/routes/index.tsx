@@ -1,9 +1,9 @@
 // src/routes/index.tsx
 import { createBrowserRouter } from 'react-router-dom';
-import DefaultLayout from '../layouts/DefaultLayout';
 import AdminPage from '../pages/adminPage/AdminPage';
 import LoginPage from '../pages/auth/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import ResponsiveLayout from '../layouts/ResponsiveLayout';
 
 const router = createBrowserRouter([
   {
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    element: <DefaultLayout />,
+    element: <ResponsiveLayout />,
     children: [
       { path: '/', element: <AdminPage /> },
       { path: '/admin', element: <AdminPage /> },

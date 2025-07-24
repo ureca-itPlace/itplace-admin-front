@@ -98,7 +98,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
           <div className="flex items-center justify-between mb-[28px]">
             <div className="flex items-center ml-[16px]">
               <div>
-                <h4 className="text-title-2 text-black mb-1">{partner.partnerName}</h4>
+                <h4 className="text-title-2 text-black mb-1">{partner.benefitName}</h4>
                 <p className="text-body-0 text-grey05 mt-1">
                   영화보다 멋진 당신의 일상을 위하여, 라이프스타일 매거진스!
                 </p>
@@ -107,7 +107,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
             <div className="w-[120px] h-[120px]  bg-white  flex items-center justify-center">
               <img
                 src={partner.image}
-                alt={`${partner.partnerName} 로고`}
+                alt={`${partner.benefitName} 로고`}
                 className="w-[120px] h-[120px] object-contain"
               />
             </div>

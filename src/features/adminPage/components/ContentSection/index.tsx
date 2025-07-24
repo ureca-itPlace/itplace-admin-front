@@ -37,8 +37,11 @@ const ContentSection = ({ activeTab }: ContentSectionProps) => {
 
   return (
     <section
-      className="flex flex-col bg-grey01 rounded-[18px]"
-      style={{ width: 1466, height: 891, marginLeft: 28 }}
+      className={
+        `flex flex-col bg-grey01 rounded-[18px] ` +
+        `w-[1466px] h-[891px] ml-[28px] ` +
+        `max-md:w-full max-md:h-auto max-md:ml-0`
+      }
     >
       {renderContent()}
     </section>

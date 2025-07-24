@@ -1,7 +1,7 @@
 // src/pages/auth/LoginPage.tsx
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { showToast } from '../../utils/toast.tsx';
@@ -30,12 +30,15 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      // TODO: 실제 로그인 API 호출
-      console.log('로그인 데이터:', data);
-
-      // 로그인 성공
-      login(data.email);
-      navigate('/admin');
+      // 실제 로그인 API 호출
+      const { adminLogin } = await import('../../apis/authApi');
+      const res = await adminLogin(data);
+      if (res.code === 'LOGIN_SUCCESS') {
+        login(data.email);
+        navigate('/admin');
+      } else {
+        showToast(res.message || '로그인에 실패했습니다.', 'error');
+      }
     } catch (error) {
       console.error('로그인 실패:', error);
       showToast('로그인에 실패했습니다. 다시 시도해주세요.', 'error');

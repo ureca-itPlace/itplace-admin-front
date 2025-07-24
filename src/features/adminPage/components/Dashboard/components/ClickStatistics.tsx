@@ -5,8 +5,7 @@ interface ClickStatisticsProps {
   title: string;
   subtitle: string;
   data: ClickDataItem[];
-  width?: number;
-  height?: number;
+  className?: string;
 }
 
 // Recharts PieLabelProps 직접 정의 (일부 속성만 사용)
@@ -43,11 +42,10 @@ const ClickStatistics = ({
   title,
   subtitle,
   data,
-  width = 546,
-  height = 382,
+  className = 'w-[546px] h-[382px] max-md:w-full max-md:h-auto',
 }: ClickStatisticsProps) => {
   return (
-    <div className="bg-white p-6 rounded-[18px]" style={{ width, height }}>
+    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
       <h3 className="text-title-4  mb-4">
         {title}
         <span className="text-body-1  text-grey04 block mt-[12px]">{subtitle}</span>

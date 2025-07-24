@@ -11,8 +11,11 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex bg-white h-screen" style={{ padding: 28, boxSizing: 'border-box' }}>
-      <div className="flex-shrink-0" style={{ width: 370, height: '100%', borderRadius: 18 }}>
+    <div className="flex bg-white h-screen p-7 max-md:p-0" style={{ boxSizing: 'border-box' }}>
+      <div
+        className="flex-shrink-0 max-md:hidden"
+        style={{ width: 370, height: '100%', borderRadius: 18 }}
+      >
         <Sidebar onTabChange={handleTabChange} />
       </div>
       <ContentSection activeTab={activeTab} />

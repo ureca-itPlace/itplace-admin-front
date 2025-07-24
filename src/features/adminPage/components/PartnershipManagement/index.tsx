@@ -282,7 +282,7 @@ const PartnershipManagement = () => {
         </div>
       ),
     },
-    { key: 'partnerName', label: '제휴처명', width: '240px' },
+    { key: 'benefitName', label: '제휴처명', width: '240px' },
     { key: 'mainCategory', label: '카테고리', width: '120px' },
     {
       key: 'type',

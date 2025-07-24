@@ -4,21 +4,19 @@ interface WishlistChartProps {
   title: string;
   subtitle: string;
   data: WishlistItem[];
-  width?: number;
-  height?: number;
+  className?: string;
 }
 
 const WishlistChart = ({
   title,
   subtitle,
   data,
-  width = 836,
-  height = 345,
+  className = 'w-[836px] h-[345px] max-md:w-full max-md:h-auto',
 }: WishlistChartProps) => {
   const maxValue = Math.max(...data.map((d) => d.favoriteCount));
 
   return (
-    <div className="bg-white p-6 rounded-[18px]" style={{ width, height }}>
+    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
       {/* 5개로 할 거면 mb-[30px], space-y-[24px]로 */}
       <h3 className="text-title-4 mb-[30px]">
         {title}
@@ -30,8 +28,13 @@ const WishlistChart = ({
 
           return (
             <div key={index} className="flex items-center">
-              <span className="text-body-1 w-28 flex-shrink-0 truncate">{item.partnerName}</span>
-              <div className="flex-1 mx-6">
+              <span className="text-body-1 w-[200px] flex-shrink-0 truncate">
+                {item.partnerName}
+                {item.mainCategory && (
+                  <span className="text-grey04 text-body-3 ml-1">({item.mainCategory})</span>
+                )}
+              </span>
+              <div className="flex-1 mx-2">
                 <div className="relative h-6 bg-grey01 rounded-full">
                   <div
                     className="h-full rounded-full animate-grow-width"

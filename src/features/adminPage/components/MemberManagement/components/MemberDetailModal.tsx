@@ -39,10 +39,10 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
       <div className="pt-[38px]">
         {/* 회원 정보 */}
         <div className="mb-6 ml-[40px]">
-          <h4 className="text-title-2  mb-2">{member.userName}</h4>
+          <h4 className="text-title-2  mb-2">{member.name}</h4>
           <p className="text-body-0 text-grey05">
             {getGradeDisplay(member.grade)} | {getUserTypeDisplay(member.userType)} | 멤버십 번호:{' '}
-            <span className="text-body-0-bold">{member.userId}</span>
+            <span className="text-body-0-bold">{member.id}</span>
           </p>
         </div>
 

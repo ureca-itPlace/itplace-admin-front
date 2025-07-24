@@ -1,11 +1,10 @@
-import { RankingItem } from '../../features/adminPage/types/types';
+import { RankingItem } from '../../../types/types';
 
 interface RankingListProps {
   title: string;
   subtitle: string;
   data: RankingItem[];
-  width?: number;
-  height?: number;
+  className?: string;
   backgroundColor?: string;
 }
 
@@ -13,12 +12,11 @@ const RankingList = ({
   title,
   subtitle,
   data,
-  width = 546,
-  height = 345,
+  className = 'w-[546px] h-[345px] max-md:w-full max-md:h-auto',
   backgroundColor = 'bg-white',
 }: RankingListProps) => {
   return (
-    <div className={`${backgroundColor} p-6 rounded-[18px]`} style={{ width, height }}>
+    <div className={`${backgroundColor} p-6 rounded-[18px] ${className}`}>
       <h3 className="text-title-4  mb-4">
         {title}
         <span className="text-body-1  text-grey04 ml-3">{subtitle}</span>

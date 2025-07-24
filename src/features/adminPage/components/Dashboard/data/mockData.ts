@@ -90,16 +90,17 @@ export const mockWishlistRanking: FavoriteBenefitItem[] = [
 
 // 클릭 통계 더미 데이터
 export const mockClickStatistics: MostClickedPartnerItem[] = [
-  { partnerId: 1, partnerName: 'CGV', clickCount: 2450, rank: 1 },
-  { partnerId: 2, partnerName: 'GS25', clickCount: 2280, rank: 2 },
-  { partnerId: 3, partnerName: '메가박스', clickCount: 2150, rank: 3 },
-  { partnerId: 4, partnerName: '스타벅스', clickCount: 1980, rank: 4 },
-  { partnerId: 5, partnerName: '올리브영', clickCount: 1850, rank: 5 },
+  { partnerName: 'CGV', clickCount: 2450, rank: 1 },
+  { partnerName: 'GS25', clickCount: 2280, rank: 2 },
+  { partnerName: '메가박스', clickCount: 2150, rank: 3 },
+  { partnerName: '스타벅스', clickCount: 1980, rank: 4 },
+  { partnerName: '올리브영', clickCount: 1850, rank: 5 },
 ];
 
 // 이용 통계 더미 데이터
 export const mockUsageStatistics: PartnerUsageStatsItem[] = [
   {
+    partnerId: 7,
     partnerName: 'CGV',
     vvipUsageCount: 650,
     vipUsageCount: 720,
@@ -107,6 +108,7 @@ export const mockUsageStatistics: PartnerUsageStatsItem[] = [
     totalUsageCount: 1850,
   },
   {
+    partnerId: 108,
     partnerName: 'GS25',
     vvipUsageCount: 580,
     vipUsageCount: 650,
@@ -114,6 +116,7 @@ export const mockUsageStatistics: PartnerUsageStatsItem[] = [
     totalUsageCount: 1720,
   },
   {
+    partnerId: 112,
     partnerName: '스타벅스',
     vvipUsageCount: 520,
     vipUsageCount: 580,
@@ -121,6 +124,7 @@ export const mockUsageStatistics: PartnerUsageStatsItem[] = [
     totalUsageCount: 1650,
   },
   {
+    partnerId: 30,
     partnerName: '메가박스',
     vvipUsageCount: 480,
     vipUsageCount: 520,
@@ -128,6 +132,7 @@ export const mockUsageStatistics: PartnerUsageStatsItem[] = [
     totalUsageCount: 1580,
   },
   {
+    partnerId: 21,
     partnerName: '올리브영',
     vvipUsageCount: 420,
     vipUsageCount: 480,

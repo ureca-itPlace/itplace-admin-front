@@ -16,20 +16,11 @@ export interface PartnerSearchRankingItem {
   changeDerection: 'UP' | 'DOWN' | 'SAME' | 'NEW';
 }
 
-export interface PartnerSearchRankingResponse {
-  searchRanking: PartnerSearchRankingItem[];
-}
-
-// 자주 클릭한 제휴처 관련 타입
+// 자주 클릭한 제휴처 관련 타입 (partnerId 제거)
 export interface MostClickedPartnerItem {
-  partnerId: number;
   partnerName: string;
   clickCount: number;
   rank: number;
-}
-
-export interface MostClickedPartnersResponse {
-  partners: MostClickedPartnerItem[];
 }
 
 // 즐겨찾기 통계 관련 타입
@@ -38,24 +29,18 @@ export interface FavoriteBenefitItem {
   partnerName: string;
   benefitName: string;
   favoriteCount: number;
+  mainCategory?: string; // mainCategory 추가
   rank: number;
 }
 
-export interface FavoritesStatisticsResponse {
-  favoriteBenefits: FavoriteBenefitItem[];
-}
-
-// 제휴처별 이용 통계 관련 타입
+// 제휴처별 이용 통계 관련 타입 (partnerId 추가)
 export interface PartnerUsageStatsItem {
+  partnerId: number;
   partnerName: string;
   vvipUsageCount: number;
   vipUsageCount: number;
   basicUsageCount: number;
   totalUsageCount: number;
-}
-
-export interface PartnerUsageStatsResponse {
-  usageStats: PartnerUsageStatsItem[];
 }
 
 export interface ApiResponse<T = unknown> {
@@ -71,7 +56,7 @@ export const getPartnersSearchRanking = async (
   recentperiod: number = 2,
   prevperiod: number = 3,
   limit: number = 5
-): Promise<ApiResponse<PartnerSearchRankingResponse>> => {
+): Promise<ApiResponse<PartnerSearchRankingItem[]>> => {
   try {
     const params = new URLSearchParams({
       recentperiod: recentperiod.toString(),
@@ -89,7 +74,7 @@ export const getPartnersSearchRanking = async (
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: { searchRanking: limitedData },
+      data: limitedData,
       timestamp: new Date().toISOString(),
     };
   }
@@ -98,7 +83,7 @@ export const getPartnersSearchRanking = async (
 // 자주 클릭한 제휴처 조회 함수
 export const getMostClickedPartners = async (
   limit: number = 5
-): Promise<ApiResponse<MostClickedPartnersResponse>> => {
+): Promise<ApiResponse<MostClickedPartnerItem[]>> => {
   try {
     const params = new URLSearchParams({
       limit: limit.toString(),
@@ -114,7 +99,7 @@ export const getMostClickedPartners = async (
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: { partners: limitedData },
+      data: limitedData,
       timestamp: new Date().toISOString(),
     };
   }
@@ -123,7 +108,7 @@ export const getMostClickedPartners = async (
 // 즐겨찾기 통계 조회 함수
 export const getFavoritesStatistics = async (
   limit: number = 5
-): Promise<ApiResponse<FavoritesStatisticsResponse>> => {
+): Promise<ApiResponse<FavoriteBenefitItem[]>> => {
   try {
     const params = new URLSearchParams({
       limit: limit.toString(),
@@ -139,7 +124,7 @@ export const getFavoritesStatistics = async (
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: { favoriteBenefits: limitedData },
+      data: limitedData,
       timestamp: new Date().toISOString(),
     };
   }
@@ -148,7 +133,7 @@ export const getFavoritesStatistics = async (
 // 제휴처별 이용 통계 조회 함수
 export const getPartnerUsageStats = async (
   period: number = 365
-): Promise<ApiResponse<PartnerUsageStatsResponse>> => {
+): Promise<ApiResponse<PartnerUsageStatsItem[]>> => {
   try {
     const params = new URLSearchParams({
       period: period.toString(),
@@ -163,7 +148,7 @@ export const getPartnerUsageStats = async (
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: { usageStats: mockUsageStatistics },
+      data: mockUsageStatistics,
       timestamp: new Date().toISOString(),
     };
   }

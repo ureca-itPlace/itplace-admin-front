@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import RankingList from '../../../../components/common/RankingList';
+import RankingList from './components/RankingList';
 import LoadingSpinner from '../../../../components/common/LoadingSpinner';
 import WishlistChart from './components/WishlistChart';
 import ClickStatistics from './components/ClickStatistics';
@@ -47,7 +47,7 @@ const convertToRankingItem = (apiData: PartnerSearchRankingItem[]): RankingItem[
 
 // API 응답을 ClickDataItem으로 변환하는 함수
 const convertToClickDataItem = (apiData: MostClickedPartnerItem[]): ClickDataItem[] => {
-  const colors = ['#250961', '#A175FF', '#CDB5FF', '#F0E8FF', '#E6D9FF'];
+  const colors = ['#250961', '#530CC2', '#7638FA', '#A175FF', '#CDB5FF'];
 
   return apiData.map((item, index) => ({
     partnerName: item.partnerName,
@@ -58,11 +58,12 @@ const convertToClickDataItem = (apiData: MostClickedPartnerItem[]): ClickDataIte
 
 // API 응답을 WishlistItem으로 변환하는 함수
 const convertToWishlistItem = (apiData: FavoriteBenefitItem[]): WishlistItem[] => {
-  const colors = ['#250961', '#A175FF', '#CDB5FF', '#F0E8FF', '#E6D9FF'];
+  const colors = ['#250961', '#530CC2', '#7638FA', '#A175FF', '#CDB5FF'];
 
   return apiData.map((item, index) => ({
     partnerName: item.partnerName,
     favoriteCount: item.favoriteCount,
+    mainCategory: item.mainCategory,
     color: colors[index % colors.length],
   }));
 };
@@ -105,11 +106,11 @@ const Dashboard = () => {
             getPartnerUsageStats(365), // period (일 단위, Swagger default 365)
           ]);
 
-        // 모든 데이터를 한 번에 변환하고 설정
-        const searchRankingItems = convertToRankingItem(searchRankingResponse.data.searchRanking);
-        const clickDataItems = convertToClickDataItem(mostClickedResponse.data.partners);
-        const wishlistItems = convertToWishlistItem(favoritesResponse.data.favoriteBenefits);
-        const usageDataItems = convertToUsageDataItem(usageStatsResponse.data.usageStats);
+        // 모든 데이터를 한 번에 변환하고 설정 (새로운 API 응답 구조에 맞게)
+        const searchRankingItems = convertToRankingItem(searchRankingResponse.data);
+        const clickDataItems = convertToClickDataItem(mostClickedResponse.data);
+        const wishlistItems = convertToWishlistItem(favoritesResponse.data);
+        const usageDataItems = convertToUsageDataItem(usageStatsResponse.data);
 
         setSearchRankingData(searchRankingItems);
         setClickData(clickDataItems);
@@ -146,32 +147,35 @@ const Dashboard = () => {
       <h2 className="text-title-3 mb-[40px]">대시 보드</h2>
 
       {/* 상단 섹션 */}
-      <div className="flex gap-[28px] mb-[28px]">
+      <div className="flex gap-[28px] mb-[28px] max-md:flex-col">
         <RankingList
           title="제휴처 검색 순위"
           subtitle="회원이 가장 많이 검색한 제휴처 Top 5"
           data={searchRankingData}
+          className="w-[546px] h-[345px] max-md:w-full max-md:h-auto"
         />
         <WishlistChart
           title="제휴처별 관심 통계"
           subtitle="회원이 가장 관심 있는 제휴처 Top 5"
           data={wishlistData}
-          height={345}
+          className="w-[836px] h-[345px] max-md:w-full max-md:h-auto"
         />
       </div>
 
       {/* 하단 섹션 */}
-      <div className="flex gap-[28px]">
+      <div className="flex gap-[28px] max-md:flex-col">
         <ClickStatistics
           title="자주 클릭한 제휴처"
           subtitle="회원 행동 기반 클릭 통계 집계 결과"
           data={clickData}
+          className="w-[546px] h-[382px] max-md:w-full max-md:h-auto"
         />
         <UsageStatistics
           title="제휴처별 이용 통계"
           subtitle="회원이 가장 많이 이용한 제휴처 Top 5"
           data={usageData}
           legends={usageStatisticsLegends}
+          className="w-[836px] h-[382px] max-md:w-full max-md:h-auto"
         />
       </div>
     </div>
