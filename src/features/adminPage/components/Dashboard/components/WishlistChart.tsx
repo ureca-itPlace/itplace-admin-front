@@ -53,7 +53,7 @@ const WishlistChart = ({
                   ></div>
                 </div>
               </div>
-              <span className="text-body-2 max-md:text-body-4 text-black w-24 text-right flex-shrink-0">
+              <span className="text-body-2 max-md:text-body-4 text-black w-[15%] max-md:w-[50%] text-right flex-shrink-0">
                 ({item.favoriteCount}회)
               </span>
             </div>
