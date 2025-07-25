@@ -1,13 +1,16 @@
 // src/layouts/MobileLayout.tsx
-import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
 import MobileHeader from '../components/common/MobileHeader';
+import ContentSection from '../features/adminPage/components/ContentSection';
 
 const MobileLayout = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
     <div className="max-md:block hidden bg-white min-h-screen">
-      <MobileHeader />
+      <MobileHeader onTabChange={setActiveTab} />
       <main className="px-5">
-        <Outlet />
+        <ContentSection activeTab={activeTab} />
       </main>
     </div>
   );
