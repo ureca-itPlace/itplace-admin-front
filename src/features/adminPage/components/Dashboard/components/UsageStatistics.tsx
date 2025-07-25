@@ -40,15 +40,18 @@ const UsageStatistics = ({
   return (
     <div className={`bg-white p-6 rounded-[18px] ${className}`}>
       <div className="flex items-center justify-between mb-4 max-md:flex-col max-md:items-start">
-        <div>
+        <div className="flex max-md:flex-col items-center max-md:items-start">
           <h3 className="text-title-4 max-md:text-title-6">{title}</h3>
-          <span className="max-md:block text-body-1 max-md:text-body-3 text-grey04 mt-1">
+          <span className="text-body-1 text-grey04 mt-1 ml-3 max-md:ml-0 max-md:mt-1 max-md:mb-2 max-md:text-body-3 max-md:block">
             {subtitle}
           </span>
         </div>
-        <div className="flex items-center mr-[40px] text-body-1  mt-0 max-md:mt-3">
+        <div className="flex items-center mr-[40px] text-body-1 mt-0 max-md:mt-3 max-md:w-full max-md:flex-wrap">
           {legends.map((legend, index) => (
-            <div key={legend.key} className={`flex items-center ${index > 0 ? 'ml-[24px]' : ''}`}>
+            <div
+              key={legend.key}
+              className={`flex items-center ${index > 0 ? 'ml-[24px]' : ''} max-md:ml-0 max-md:mr-4 max-md:mb-2`}
+            >
               <div className={`w-3 h-3 ${legend.color}`}></div>
               <span className="text-body-1 max-md:text-body-3 text-grey04 ml-[12px]">
                 {legend.label}
@@ -57,8 +60,8 @@ const UsageStatistics = ({
           ))}
         </div>
       </div>
-      <div className="h-64 mt-[43px]">
-        <ResponsiveContainer width="100%" height="80%">
+      <div className="h-72 max-md:h-56 mt-5">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 5 }}>
             <CartesianGrid vertical={false} />
             <XAxis

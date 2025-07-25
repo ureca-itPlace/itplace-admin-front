@@ -48,9 +48,7 @@ const ClickStatistics = ({
     <div className={`bg-white p-6 rounded-[18px] ${className}`}>
       <h3 className="text-title-4 max-md:text-title-6 mb-4">
         {title}
-        <span className="max-md:block text-body-1 max-md:text-body-3 text-grey04 ml-3 max-md:ml-0 mt-1">
-          {subtitle}
-        </span>
+        <span className="block text-body-1 max-md:text-body-3 text-grey04 mt-1">{subtitle}</span>
       </h3>
       <div className="flex items-center">
         <div className="w-64 h-64 max-md:w-[100px] max-md:h-[100px]">
