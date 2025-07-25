@@ -42,7 +42,7 @@ const ClickStatistics = ({
   title,
   subtitle,
   data,
-  className = 'w-[546px] h-[382px] max-md:w-full max-md:h-auto',
+  className = 'w-[5146px] h-[382px] max-md:w-full max-md:h-auto',
 }: ClickStatisticsProps) => {
   return (
     <div className={`bg-white p-6 rounded-[18px] ${className}`}>
@@ -51,7 +51,7 @@ const ClickStatistics = ({
         <span className="block text-body-1 max-md:text-body-3 text-grey04 mt-1">{subtitle}</span>
       </h3>
       <div className="flex items-center">
-        <div className="w-64 h-64 max-md:w-[100px] max-md:h-[100px]">
+        <div className="w-[230px] h-64 max-md:w-[100px] max-md:h-[100px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -73,7 +73,7 @@ const ClickStatistics = ({
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex-1 ml-8">
+        <div className="flex-1 ml-[60px]">
           <div className="space-y-4">
             {data.map((item, index) => (
               <div key={index} className="flex items-center gap-3">
