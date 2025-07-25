@@ -16,7 +16,7 @@ const WishlistChart = ({
   const maxValue = Math.max(...data.map((d) => d.favoriteCount));
 
   return (
-    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
+    <div className={`bg-white max-md:bg-grey01 p-6 rounded-[18px] ${className}`}>
       {/* 5개로 할 거면 mb-[30px], space-y-[24px]로 */}
       <h3 className="text-title-4 max-md:text-title-6 mb-4">
         {title}

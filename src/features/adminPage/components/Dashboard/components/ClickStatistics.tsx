@@ -45,7 +45,7 @@ const ClickStatistics = ({
   className = 'w-[5146px] h-[382px] max-md:w-full max-md:h-auto',
 }: ClickStatisticsProps) => {
   return (
-    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
+    <div className={`bg-white max-md:bg-grey01 p-6 rounded-[18px] ${className}`}>
       <h3 className="text-title-4 max-md:text-title-6 mb-4">
         {title}
         <span className="block text-body-1 max-md:text-body-3 text-grey04 mt-1">{subtitle}</span>

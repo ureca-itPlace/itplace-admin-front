@@ -13,7 +13,7 @@ const RankingList = ({
   subtitle,
   data,
   className = 'w-[546px] h-[345px] max-md:w-full max-md:h-auto',
-  backgroundColor = 'bg-white',
+  backgroundColor = 'bg-white max-md:bg-grey01',
 }: RankingListProps) => {
   return (
     <div className={`${backgroundColor} p-6 rounded-[18px] ${className}`}>

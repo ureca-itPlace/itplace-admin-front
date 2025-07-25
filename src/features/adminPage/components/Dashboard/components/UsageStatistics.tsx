@@ -38,7 +38,7 @@ const UsageStatistics = ({
   className = 'w-[836px] h-[382px] max-md:w-full max-md:h-auto',
 }: UsageStatisticsProps) => {
   return (
-    <div className={`bg-white p-6 rounded-[18px] ${className}`}>
+    <div className={`bg-white max-md:bg-grey01 p-6 rounded-[18px] ${className}`}>
       <div className="flex items-center justify-between mb-4 max-md:flex-col max-md:items-start">
         <div className="flex max-md:flex-col items-center max-md:items-start">
           <h3 className="text-title-4 max-md:text-title-6">{title}</h3>
