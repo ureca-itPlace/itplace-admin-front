@@ -58,7 +58,7 @@ const UsageStatistics = ({
         </div>
       </div>
       <div className="h-64 mt-[43px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="80%">
           <BarChart data={data} margin={{ top: 10, right: 0, left: -10, bottom: 5 }}>
             <CartesianGrid vertical={false} />
             <XAxis

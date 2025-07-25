@@ -175,7 +175,7 @@ const Dashboard = () => {
           subtitle="회원이 가장 많이 이용한 제휴처 Top 5"
           data={usageData}
           legends={usageStatisticsLegends}
-          className="w-[836px] h-[382px] max-md:w-full max-md:h-auto"
+          className="w-[836px] h-[382px] max-md:w-full"
         />
       </div>
     </div>
