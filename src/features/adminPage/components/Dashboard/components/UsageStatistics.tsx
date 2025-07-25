@@ -21,7 +21,7 @@ const CustomTick = (props: { x: number; y: number; payload: { value: string } })
       y={y}
       dy={20}
       textAnchor="middle"
-      className="text-black text-body-2 max-md:text-[6px]"
+      className="text-black text-body-2 max-sm:text-[6px] max-md:text-body-4"
       style={{ cursor: isLong ? 'pointer' : 'default' }}
     >
       {displayText}

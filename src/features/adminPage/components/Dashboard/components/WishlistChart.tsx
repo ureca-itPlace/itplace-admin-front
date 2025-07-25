@@ -29,7 +29,7 @@ const WishlistChart = ({
           const barWidth = (item.favoriteCount / maxValue) * 100;
 
           return (
-            <div key={index} className="flex items-center">
+            <div key={index} className="flex items-center max-md:justify-between">
               <span className="text-body-1 max-md:text-body-3 w-[200px] max-md:w-[150px] flex-shrink-0 truncate">
                 {item.partnerName}
                 {item.mainCategory && (
@@ -38,7 +38,7 @@ const WishlistChart = ({
                   </span>
                 )}
               </span>
-              <div className="flex-1 mx-2 max-md:hidden">
+              <div className="flex-1 mx-2 max-sm:hidden">
                 <div className="relative h-6 bg-grey01 rounded-full">
                   <div
                     className="h-full rounded-full animate-grow-width"
@@ -53,7 +53,7 @@ const WishlistChart = ({
                   ></div>
                 </div>
               </div>
-              <span className="text-body-2 max-md:text-body-4 text-black w-[15%] max-md:w-[50%] text-right flex-shrink-0">
+              <span className="text-body-2 max-md:text-body-4 text-black w-[15%] max-sm:w-[30%] text-right flex-shrink-0">
                 ({item.favoriteCount}회)
               </span>
             </div>
