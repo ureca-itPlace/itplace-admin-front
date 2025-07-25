@@ -9,7 +9,7 @@ const MobileLayout = () => {
   return (
     <div className="max-md:block hidden bg-white min-h-screen">
       <MobileHeader onTabChange={setActiveTab} />
-      <main className="px-5">
+      <main className="px-5 max-md:pt-[54px]">
         <ContentSection activeTab={activeTab} />
       </main>
     </div>

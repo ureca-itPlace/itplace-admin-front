@@ -37,7 +37,7 @@ const MobileHeader = ({
   return (
     <>
       <header
-        className={`w-full h-[54px] flex items-center px-4 z-[9999] border-b border-grey01 max-md:flex ${backgroundColor}`}
+        className={`w-full h-[54px] flex items-center px-4 border-b border-grey01 max-md:flex max-md:fixed max-md:top-0 max-md:left-0 max-md:w-full max-md:z-50 ${backgroundColor}`}
       >
         <div className="flex flex-row items-center h-full ">
           <button

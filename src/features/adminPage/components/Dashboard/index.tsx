@@ -143,7 +143,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="pl-[28px] pt-[32px] pr-[28px] h-screen overflow-auto">
+    <div className="pl-[28px] pt-[32px] pr-[28px] h-screen max-md:max-h-[calc(100vh-54px)] overflow-auto">
       <h2 className="text-title-3 max-md:text-title-5 mb-[40px] max-md:mb-4">대시 보드</h2>
 
       {/* 상단 섹션 */}
