@@ -23,7 +23,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({
 }) => {
   return (
     <div style={{ width, height }}>
-      <div className="rounded-[10px] overflow-hidden  h-full">
+      <div className="rounded-[10px] overflow-hidden h-full">
         <div className={`bg-white p-6 flex items-center h-full border-l-[10px] ${borderColor}`}>
           <div>
             <div className="text-body-2 text-black mb-1">{title}</div>

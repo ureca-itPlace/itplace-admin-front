@@ -15,6 +15,7 @@ import {
   searchBenefits,
   getTotalBenefitCount,
 } from './apis/PartnershipManagementApis';
+import MobileStatisticsCard from '../../../../components/common/MobileStatisticsCard';
 
 const PartnershipManagement = () => {
   // BenefitFilterToggle 상태
@@ -463,11 +464,18 @@ const PartnershipManagement = () => {
   ];
 
   return (
-    <div className="pl-[28px] pt-[32px] pr-[28px] h-full">
-      <h2 className="text-title-3 mb-[40px]">제휴 관리</h2>
-
+    <div className="pl-[28px] pt-[32px] pr-[28px] h-full max-md:p-0">
+      <h2 className="text-title-3 mb-[40px] max-md:hidden">제휴 관리</h2>
+      {/* 모바일에서만 통계 카드 노출 (좌우 여백 없이 꽉차게) */}
+      <div className="max-md:block hidden mb-4 max-md:mx-[-20px]">
+        <MobileStatisticsCard
+          title="전체 제휴처 수"
+          onRefresh={handleRefresh}
+          totalNumbers={totalPartners}
+        />
+      </div>
       {/* 상단 정보 섹션 */}
-      <div className="flex mb-[28px]" style={{ width: 1410 }}>
+      <div className="flex mb-[28px] max-md:hidden" style={{ width: 1410 }}>
         <StatisticsCard
           title="제휴처 수"
           value={totalPartners}
@@ -492,18 +500,18 @@ const PartnershipManagement = () => {
       </div>
 
       {/* 검색 및 액션 버튼 섹션 */}
-      <div className="flex items-center mb-[28px] justify-between" style={{ width: 1410 }}>
+      <div className="flex max-md:flex-col items-center justify-between mb-[28px] w-[1410px] max-md:w-full">
         <BenefitFilterToggle value={benefitToggle} onChange={setBenefitToggle} />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-md:w-full max-md:mt-3">
           <SearchBar
             placeholder="제휴처 검색"
             value={searchTerm}
             onChange={handleSearchChange}
             onClear={() => setSearchTerm('')}
-            width={344}
-            height={50}
+            widthClass="w-[344px] max-md:w-full"
+            heightClass="h-[50px] max-md:h-[40px]"
           />
-          <div className="filter-dropdown">
+          <div className="max-md:hidden flex gap-3 filter-dropdown">
             <FilterDropdown
               isOpen={showFilterDropdown}
               onToggle={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -511,13 +519,13 @@ const PartnershipManagement = () => {
               onReset={handleFilterReset}
               hasActiveFilters={selectedCategory !== null || selectedBenefitType !== null}
             />
+            <ActionButton
+              icon={<TbRefresh size={20} />}
+              onClick={handleRefresh}
+              variant="primary"
+              size={50}
+            />
           </div>
-          <ActionButton
-            icon={<TbRefresh size={20} />}
-            onClick={handleRefresh}
-            variant="primary"
-            size={50}
-          />
         </div>
       </div>
 
@@ -556,7 +564,7 @@ const PartnershipManagement = () => {
         itemsPerPage={itemsPerPage}
         totalItems={totalItems}
         onPageChange={handlePageChange}
-        width={1410}
+        width="w-[1410px]"
       />
 
       {/* 제휴처 상세정보 모달 */}

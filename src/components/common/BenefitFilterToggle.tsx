@@ -10,7 +10,7 @@ interface BenefitFilterToggleProps {
 export default function BenefitFilterToggle({
   value,
   onChange,
-  width = 'w-[300px]',
+  width = 'w-[300px] max-md:w-full',
   fontSize = 'text-title-7',
 }: BenefitFilterToggleProps) {
   return (

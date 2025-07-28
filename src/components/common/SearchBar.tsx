@@ -6,8 +6,8 @@ interface SearchBarProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClear: () => void;
-  width?: number;
-  height?: number;
+  widthClass?: string; // tailwind width class
+  heightClass?: string; // tailwind height class
   backgroundColor?: string;
 }
 
@@ -16,12 +16,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
   onClear,
-  width = 344,
-  height = 50,
+  widthClass,
+  heightClass,
   backgroundColor,
 }) => {
   return (
-    <div className="relative" style={{ width, height }}>
+    <div
+      className={`relative ${widthClass} ${heightClass} max-md:border max-md:border-grey03 max-md:rounded-[8px]`}
+    >
       <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
         <TbSearch size={18} className="text-purple04" />
       </div>
