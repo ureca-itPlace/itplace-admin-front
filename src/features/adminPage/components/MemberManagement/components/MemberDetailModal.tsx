@@ -52,8 +52,8 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({ isOpen, member, o
       <div className="pt-[38px]">
         {/* 회원 정보 */}
         <div className="mb-6 ml-[40px]">
-          <h4 className="text-title-2  mb-2">{member.name}</h4>
-          <p className="text-body-0 text-grey05">
+          <h4 className="text-title-2 max-md:text-title-5 mb-2">{member.name}</h4>
+          <p className="text-body-0 max-md:text-body-3 text-grey05">
             {getGradeDisplay(member.grade)} | {getUserTypeDisplay(member.userType)} | 멤버십 번호:{' '}
             <span className="text-body-0-bold">{membershipId || '없음'}</span>
           </p>
@@ -64,11 +64,17 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({ isOpen, member, o
           className="bg-grey01 rounded-[12px] overflow-hidden ml-[40px] mr-[40px]"
           style={{ height: 'calc(100% - 120px)' }}
         >
-          <div className="bg-grey02 pl-[42px] py-4 border-b border-grey02">
+          <div className="bg-grey02 pl-[42px] max-md:pl-6 py-4 border-b border-grey02">
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-4 text-left text-body-0  text-grey05">브랜드</div>
-              <div className="col-span-4 text-center text-body-0  text-grey05">할인 금액</div>
-              <div className="col-span-4 text-center text-body-0 text-grey05">날짜</div>
+              <div className="col-span-4 text-left text-body-0 max-md:text-body-2 text-grey05">
+                브랜드
+              </div>
+              <div className="col-span-4 text-center max-md:text-left text-body-0 max-md:text-body-2 text-grey05">
+                할인 금액
+              </div>
+              <div className="col-span-4 text-center max-md:text-left text-body-0 max-md:text-body-2 text-grey05">
+                날짜
+              </div>
             </div>
           </div>
           <div className="overflow-y-auto" style={{ height: 'calc(100% - 48px)' }}>
@@ -78,15 +84,15 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({ isOpen, member, o
               </div>
             ) : membershipUsage.length > 0 ? (
               membershipUsage.map((usage, index) => (
-                <div key={index} className="pl-[42px] py-4 border-b border-white">
-                  <div className="grid grid-cols-12 gap-8">
-                    <div className="col-span-4 text-body-0 text-black truncate">
+                <div key={index} className="pl-[42px] max-md:pl-6 py-4 border-b border-white">
+                  <div className="grid grid-cols-12 gap-8 max-md:gap-4">
+                    <div className="col-span-4 text-body-0 max-md:text-body-4 text-black truncate">
                       {usage.benefitName}
                     </div>
-                    <div className="col-span-4 text-body-0 text-black text-center ">
+                    <div className="col-span-4 text-body-0 max-md:text-body-4 text-black text-center max-md:text-left">
                       {usage.discountAmount.toLocaleString()}원
                     </div>
-                    <div className="col-span-4 text-body-0 text-black text-center ">
+                    <div className="col-span-4 text-body-0 max-md:text-body-4 text-black text-center max-md:text-left ">
                       {usage.usedAt}
                     </div>
                   </div>

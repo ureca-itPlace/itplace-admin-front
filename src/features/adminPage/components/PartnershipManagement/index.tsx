@@ -5,6 +5,9 @@ import StatisticsCard from '../../../../components/common/StatisticsCard';
 import SearchBar from '../../../../components/common/SearchBar';
 import FilterDropdown from '../../../../components/common/FilterDropdown';
 import DataTable from '../../../../components/common/DataTable';
+import FilterButtonGroup from '../../../../components/common/FilterButtonGroup';
+import FilterDropdownMenu from '../../../../components/common/FilterDropdownMenu';
+import MobilePartnerCard from './components/MobilePartnerCard';
 import BenefitFilterToggle from '../../../../components/common/BenefitFilterToggle';
 import ActionButton from '../../../../components/common/ActionButton';
 import Pagination from '../../../../components/common/Pagination';
@@ -18,6 +21,10 @@ import {
 import MobileStatisticsCard from '../../../../components/common/MobileStatisticsCard';
 
 const PartnershipManagement = () => {
+  // 어떤 모바일 필터 드롭다운이 열려있는지: 'category' | 'benefitType' | null
+  const [openMobileFilter, setOpenMobileFilter] = useState<
+    null | 'category' | 'benefitType' | 'sort'
+  >(null);
   // BenefitFilterToggle 상태
   const [benefitToggle, setBenefitToggle] = useState('default' as 'default' | 'vipkok');
   const [searchTerm, setSearchTerm] = useState('');
@@ -310,24 +317,18 @@ const PartnershipManagement = () => {
   };
 
   // 정렬 핸들러
-  const handleSort = (field: 'searchRank' | 'favoriteRank' | 'usageRank') => {
-    let nextSortField: typeof sortField = field;
-    let nextSortDirection: typeof sortDirection = 'asc';
-    if (sortField === field) {
-      if (sortDirection === 'asc') {
-        nextSortDirection = 'desc';
-      } else {
-        nextSortField = null;
-        nextSortDirection = 'asc';
-      }
-    }
-    setSortField(nextSortField);
-    setSortDirection(nextSortDirection);
+  // 정렬 핸들러 (필드, 방향 모두 받도록 수정)
+  const handleSort = (
+    field: 'searchRank' | 'favoriteRank' | 'usageRank',
+    direction: 'asc' | 'desc' = 'asc'
+  ) => {
+    setSortField(field);
+    setSortDirection(direction);
     setCurrentPage(1);
     if (debouncedSearchTerm) {
-      searchPartners(debouncedSearchTerm, 1, nextSortField, nextSortDirection);
+      searchPartners(debouncedSearchTerm, 1, field, direction);
     } else {
-      loadPartners(1, nextSortField, nextSortDirection);
+      loadPartners(1, field, direction);
     }
   };
 
@@ -488,6 +489,7 @@ const PartnershipManagement = () => {
           title="전체 제휴처 수"
           onRefresh={handleRefresh}
           totalNumbers={totalPartners}
+          unit="개"
         />
       </div>
       {/* 상단 정보 섹션 */}
@@ -543,15 +545,159 @@ const PartnershipManagement = () => {
             />
           </div>
         </div>
+        {/* 모바일에서만 필터 버튼 그룹 */}
+        <div className="w-full max-md:flex hidden relative mt-3">
+          <FilterButtonGroup
+            buttons={[
+              {
+                label: '카테고리',
+                onClick: () =>
+                  setOpenMobileFilter(openMobileFilter === 'category' ? null : 'category'),
+                active: selectedCategory !== null,
+              },
+              {
+                label: '혜택 유형',
+                onClick: () =>
+                  setOpenMobileFilter(openMobileFilter === 'benefitType' ? null : 'benefitType'),
+                active: selectedBenefitType !== null,
+              },
+              {
+                label: '순위 정렬',
+                onClick: () => setOpenMobileFilter(openMobileFilter === 'sort' ? null : 'sort'),
+                active: sortField !== null,
+              },
+            ]}
+          />
+          {/* 드롭다운 메뉴: 버튼 아래에 조건부 렌더 */}
+          {openMobileFilter === 'category' && (
+            <FilterDropdownMenu
+              options={filterGroups[0].options}
+              selectedValue={filterGroups[0].selectedValue as string | null}
+              onSelect={filterGroups[0].onSelect}
+              onClose={() => setOpenMobileFilter(null)}
+              className="left-0 top-[52px] w-1/2"
+            />
+          )}
+          {openMobileFilter === 'benefitType' && (
+            <FilterDropdownMenu
+              options={filterGroups[1].options}
+              selectedValue={filterGroups[1].selectedValue as string | null}
+              onSelect={filterGroups[1].onSelect}
+              onClose={() => setOpenMobileFilter(null)}
+              className="left-1/2 -translate-x-1/2 top-[52px] w-1/2"
+            />
+          )}
+          {openMobileFilter === 'sort' && (
+            <div className="absolute right-0 top-[52px] w-1/2 bg-white border border-grey02 rounded-lg shadow-lg z-50 text-body-3">
+              <div className="border-b border-grey02">
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${!sortField ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    setSortField(null);
+                    setSortDirection('asc');
+                    setCurrentPage(1);
+                    if (debouncedSearchTerm) {
+                      searchPartners(debouncedSearchTerm, 1, null, 'asc');
+                    } else {
+                      loadPartners(1, null, 'asc');
+                    }
+                  }}
+                >
+                  초기화
+                </button>
+              </div>
+              <div className="border-b border-grey02">
+                <div className="px-4 py-2 text-body-2 text-black">검색 순위</div>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'searchRank' && sortDirection === 'asc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('searchRank', 'asc');
+                  }}
+                >
+                  오름차순
+                </button>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'searchRank' && sortDirection === 'desc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('searchRank', 'desc');
+                  }}
+                >
+                  내림차순
+                </button>
+              </div>
+              <div className="border-b border-grey02">
+                <div className="px-4 py-2 text-body-2 text-black">즐겨찾기 순위</div>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'favoriteRank' && sortDirection === 'asc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('favoriteRank', 'asc');
+                  }}
+                >
+                  오름차순
+                </button>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'favoriteRank' && sortDirection === 'desc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('favoriteRank', 'desc');
+                  }}
+                >
+                  내림차순
+                </button>
+              </div>
+              <div className="border-b border-grey02">
+                <div className="px-4 py-2 text-body-2 text-black">이용 순위</div>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'usageRank' && sortDirection === 'asc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('usageRank', 'asc');
+                  }}
+                >
+                  오름차순
+                </button>
+                <button
+                  className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'usageRank' && sortDirection === 'desc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
+                  onClick={() => {
+                    setOpenMobileFilter(null);
+                    handleSort('usageRank', 'desc');
+                  }}
+                >
+                  내림차순
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 제휴처 목록 테이블 */}
-      <div className="relative">
-        {isLoading && (
-          <div className="absolute inset-0 bg-white z-10 flex items-center justify-center">
-            <div className="text-grey03">검색 중...</div>
-          </div>
-        )}
+      {/* 모바일 카드형 리스트 */}
+      <div className="max-md:block hidden">
+        {partners.map((item) => (
+          <MobilePartnerCard
+            key={item.benefitId}
+            partner={item}
+            onLinkClick={() => handlePartnerDetailClick(item)}
+          />
+        ))}
+        {/* 모바일 페이지네이션 */}
+        <div className="max-md:block hidden mt-4">
+          <Pagination
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+            width="w-[100%] max-md:w-auto"
+          />
+        </div>
+      </div>
+
+      {/* PC 테이블 */}
+      <div className="max-md:hidden">
         <DataTable
           data={partners as unknown as Record<string, unknown>[]}
           columns={columns}
@@ -560,16 +706,15 @@ const PartnershipManagement = () => {
           height={516}
           emptyMessage="제휴처가 없습니다."
         />
+        {/* PC 페이지네이션 */}
+        <Pagination
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          width="w-[1410px]"
+        />
       </div>
-
-      {/* 페이지네이션 */}
-      <Pagination
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-        width="w-[1410px]"
-      />
 
       {/* 제휴처 상세정보 모달 */}
       <PartnerDetailModal

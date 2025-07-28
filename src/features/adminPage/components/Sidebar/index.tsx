@@ -7,7 +7,7 @@ import { TbBuildingStore } from 'react-icons/tb';
 import { TbSocial } from 'react-icons/tb';
 import { TbLogout2 } from 'react-icons/tb';
 import { useAuth } from '../../../../hooks/useAuth';
-import Modal from '../../../../components/common/Modal';
+import { showToast } from '../../../../utils/toast';
 
 interface SidebarProps {
   onTabChange: (tabId: string) => void;
@@ -15,7 +15,7 @@ interface SidebarProps {
 
 const Sidebar = ({ onTabChange }: SidebarProps) => {
   const [selectedTab, setSelectedTab] = useState('dashboard');
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  // 로그아웃 모달 상태 제거
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -29,24 +29,16 @@ const Sidebar = ({ onTabChange }: SidebarProps) => {
 
   const handleTabClick = (tabId: string) => {
     if (tabId === 'logout') {
-      // 로그아웃 모달 표시
-      setShowLogoutModal(true);
+      logout();
+      showToast('로그아웃 되었습니다.');
+      navigate('/login');
       return;
     }
-
     setSelectedTab(tabId);
     onTabChange(tabId);
   };
 
-  const handleLogoutConfirm = () => {
-    logout();
-    navigate('/login');
-    setShowLogoutModal(false);
-  };
-
-  const handleLogoutCancel = () => {
-    setShowLogoutModal(false);
-  };
+  // 로그아웃 관련 함수 제거
 
   return (
     <>
@@ -84,25 +76,7 @@ const Sidebar = ({ onTabChange }: SidebarProps) => {
         </nav>
       </aside>
 
-      {/* 로그아웃 확인 모달 */}
-      <Modal
-        isOpen={showLogoutModal}
-        title="로그아웃"
-        message="정말 로그아웃 하시겠습니까?"
-        onClose={handleLogoutCancel}
-        buttons={[
-          {
-            label: '취소',
-            type: 'secondary',
-            onClick: handleLogoutCancel,
-          },
-          {
-            label: '로그아웃',
-            type: 'primary',
-            onClick: handleLogoutConfirm,
-          },
-        ]}
-      />
+      {/* 로그아웃 모달 제거, 토스트만 사용 */}
     </>
   );
 };

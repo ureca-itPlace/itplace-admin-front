@@ -5,6 +5,8 @@ import StatisticsCard from '../../../../components/common/StatisticsCard';
 import MobileStatisticsCard from '../../../../components/common/MobileStatisticsCard';
 import SearchBar from '../../../../components/common/SearchBar';
 import FilterDropdown from '../../../../components/common/FilterDropdown';
+import FilterDropdownMenu from '../../../../components/common/FilterDropdownMenu';
+import FilterButtonGroup from '../../../../components/common/FilterButtonGroup';
 import DataTable from '../../../../components/common/DataTable';
 import ActionButton from '../../../../components/common/ActionButton';
 import Pagination from '../../../../components/common/Pagination';
@@ -26,6 +28,8 @@ const MemberManagement = () => {
   const [selectedMemberType, setSelectedMemberType] = useState<string | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  // 어떤 모바일 필터 드롭다운이 열려있는지: 'memberType' | 'grade' | null
+  const [openMobileFilter, setOpenMobileFilter] = useState<null | 'memberType' | 'grade'>(null);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [showPartnerModal, setShowPartnerModal] = useState(false);
   const itemsPerPage = 8;
@@ -346,7 +350,7 @@ const MemberManagement = () => {
       </div>
 
       {/* 검색 및 액션 버튼 섹션 */}
-      <div className="flex items-center justify-between mb-[28px] w-[1410px] max-md:w-full">
+      <div className="flex items-center justify-between mb-[28px] w-[1410px] max-md:w-full max-md:flex-col max-md:gap-3">
         <SearchBar
           placeholder="회원 검색"
           value={searchTerm}
@@ -356,6 +360,44 @@ const MemberManagement = () => {
           heightClass="h-[50px] max-md:h-[40px]"
           backgroundColor="white"
         />
+
+        {/* 모바일에서만 필터 버튼 그룹 */}
+        <div className="w-full max-md:flex hidden relative">
+          <FilterButtonGroup
+            buttons={[
+              {
+                label: '회원 구분',
+                onClick: () =>
+                  setOpenMobileFilter(openMobileFilter === 'memberType' ? null : 'memberType'),
+                active: selectedMemberType !== null,
+              },
+              {
+                label: '등급',
+                onClick: () => setOpenMobileFilter(openMobileFilter === 'grade' ? null : 'grade'),
+                active: selectedGrade !== null,
+              },
+            ]}
+          />
+          {/* 드롭다운 메뉴: 버튼 아래에 조건부 렌더 */}
+          {openMobileFilter === 'memberType' && (
+            <FilterDropdownMenu
+              options={filterGroups[0].options}
+              selectedValue={filterGroups[0].selectedValue as string | null}
+              onSelect={filterGroups[0].onSelect}
+              onClose={() => setOpenMobileFilter(null)}
+              className="left-0 top-[52px] w-1/2"
+            />
+          )}
+          {openMobileFilter === 'grade' && (
+            <FilterDropdownMenu
+              options={filterGroups[1].options}
+              selectedValue={filterGroups[1].selectedValue as string | null}
+              onSelect={filterGroups[1].onSelect}
+              onClose={() => setOpenMobileFilter(null)}
+              className="right-0 top-[52px] w-1/2"
+            />
+          )}
+        </div>
 
         <div className="max-md:hidden flex items-center gap-3">
           <div className="filter-dropdown">
@@ -389,7 +431,7 @@ const MemberManagement = () => {
           {members.map((item) => (
             <MobileDataTable
               key={item.id}
-              onLinkClick={() => window.open('/member/' + item.id, '_blank')}
+              onLinkClick={() => handlePartnerDetailClick(item)}
               fields={[
                 { label: '회원명', value: item.name },
                 { label: '등급', value: item.grade === 'BASIC' ? '우수' : item.grade },
@@ -406,7 +448,7 @@ const MemberManagement = () => {
               itemsPerPage={itemsPerPage}
               totalItems={totalItems}
               onPageChange={handlePageChange}
-              width="w-[100%]"
+              width="w-[100%] max-md:w-auto"
             />
           </div>
         </div>

@@ -25,7 +25,9 @@ const EditingSection: React.FC<EditingSectionProps> = ({
   className = '',
 }) => (
   <div className="flex mb-8 ml-[16px]">
-    <h5 className="text-title-5 text-black mb-4 w-[100px] flex-shrink-0">{label}</h5>
+    <h5 className="text-title-5 text-black mb-4 w-[100px] flex-shrink-0 max-md:text-body-2">
+      {label}
+    </h5>
     <div className="pl-[24px] flex-1">
       <div className="space-y-3">
         <div>
@@ -33,11 +35,13 @@ const EditingSection: React.FC<EditingSectionProps> = ({
             <textarea
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className={`text-body-0 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none ${className}`}
+              className={`text-body-0 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none max-md:text-body-3 ${className}`}
               placeholder={placeholder}
             />
           ) : (
-            <div className="text-body-0 text-grey05 whitespace-pre-line">{value}</div>
+            <div className="text-body-0 text-grey05 whitespace-pre-line max-md:text-body-3">
+              {value}
+            </div>
           )}
         </div>
       </div>
@@ -161,8 +165,10 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
               <div className="flex items-center justify-between mb-[28px]">
                 <div className="flex items-center ml-[16px]">
                   <div>
-                    <h4 className="text-title-2 text-black mb-1">{partner.benefitName}</h4>
-                    <p className="text-body-0 text-grey05 mt-1">
+                    <h4 className="text-title-2 text-black mb-1 max-md:text-title-5">
+                      {partner.benefitName}
+                    </h4>
+                    <p className="text-body-0 text-grey05 mt-1 max-md:text-body-3">
                       영화보다 멋진 당신의 일상을 위하여, 라이프스타일 매거진스!
                     </p>
                   </div>
@@ -183,6 +189,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
                 onChange={(v) => handleInputChange('benefitInfo', v)}
                 placeholder="제공 횟수 정보를 입력하세요"
                 isEditing={isEditing}
+                className="max-md:text-body-4"
               />
               {/*혜택 내용 섹션*/}
               <EditingSection
@@ -191,6 +198,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
                 onChange={(v) => handleInputChange('benefitContent', v)}
                 placeholder="혜택 내용을 입력하세요"
                 isEditing={isEditing}
+                className="max-md:text-body-4"
               />
               {/*이용방법 섹션*/}
               <EditingSection
@@ -199,6 +207,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
                 onChange={(v) => handleInputChange('usageMethod', v)}
                 placeholder="이용 방법을 입력하세요"
                 isEditing={isEditing}
+                className="max-md:text-body-4"
               />
             </>
           )}
@@ -210,13 +219,13 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
             <>
               <button
                 onClick={handleCancel}
-                className="w-[218px] h-[52px] bg-white text-grey05 rounded-[30px] text-body-0 font-medium border border-grey03"
+                className="w-[218px] h-[52px] bg-white text-grey05 rounded-[30px] text-body-0 font-medium border border-grey03 max-md:text-body-2"
               >
                 취소하기
               </button>
               <button
                 onClick={handleSave}
-                className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium"
+                className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium max-md:text-body-2"
               >
                 저장하기
               </button>
@@ -224,7 +233,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
           ) : (
             <button
               onClick={handleEdit}
-              className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium "
+              className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium max-md:text-body-2"
             >
               수정하기
             </button>
