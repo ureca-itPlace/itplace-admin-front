@@ -14,7 +14,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   size = 50,
 }) => {
   const baseClasses =
-    'flex items-center justify-center border border-gray-300 rounded-[12px] transition-colors duration-200';
+    'flex items-center justify-center border border-grey02 rounded-[12px] max-md:rounded-[px] transition-colors duration-200';
 
   const variantClasses = {
     primary: 'bg-purple04 hover:bg-purple05 text-white',

@@ -10,17 +10,15 @@ interface BenefitFilterToggleProps {
 export default function BenefitFilterToggle({
   value,
   onChange,
-  width = 'w-[300px]',
+  width = 'w-[300px] max-md:w-full',
   fontSize = 'text-title-7',
 }: BenefitFilterToggleProps) {
   return (
-    <div
-      className={`flex items-center ${width} h-[50px] bg-grey01 rounded-[10px] border border-grey02 `}
-    >
+    <div className={`flex items-center ${width} h-[50px] bg-white rounded-[10px]`}>
       <button
         onClick={() => onChange('default')}
         className={`flex-1 h-[42px] rounded-[8px] ${fontSize} transition-colors flex items-center justify-center ${
-          value === 'default' ? 'bg-white text-purple04 shadow-sm' : 'bg-transparent text-grey03'
+          value === 'default' ? 'bg-purple04 text-white shadow-sm' : 'bg-transparent text-grey03'
         }`}
       >
         기본 혜택
@@ -28,7 +26,7 @@ export default function BenefitFilterToggle({
       <button
         onClick={() => onChange('vipkok')}
         className={`flex-1 h-[42px] rounded-[8px] ${fontSize} transition-colors flex items-center justify-center ${
-          value === 'vipkok' ? 'bg-white text-purple04 shadow-sm' : 'bg-transparent text-grey03'
+          value === 'vipkok' ? 'bg-purple04 text-white shadow-sm' : 'bg-transparent text-grey03'
         }`}
       >
         VIP 콕

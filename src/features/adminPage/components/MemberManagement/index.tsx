@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TbRefresh, TbExternalLink } from 'react-icons/tb';
 import { debounce } from 'lodash';
 import StatisticsCard from '../../../../components/common/StatisticsCard';
+import MobileStatisticsCard from '../../../../components/common/MobileStatisticsCard';
 import SearchBar from '../../../../components/common/SearchBar';
 import FilterDropdown from '../../../../components/common/FilterDropdown';
 import DataTable from '../../../../components/common/DataTable';
@@ -14,6 +15,7 @@ import {
   getMembersWithPagination,
   getMemberStatistics,
 } from './apis/MemberManagementApis';
+import MobileDataTable from '../../../../components/common/MobileDataTable';
 
 const MemberManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -306,11 +308,20 @@ const MemberManagement = () => {
   ];
 
   return (
-    <div className="pl-[28px] pt-[32px] pr-[28px] h-full">
-      <h2 className="text-title-3 mb-[40px]">사용자 관리</h2>
+    <div className="pl-[28px] pt-[32px] pr-[28px] h-full max-md:p-0">
+      <h2 className="text-title-3 mb-[40px] max-md:hidden">사용자 관리</h2>
+
+      {/* 모바일에서만 통계 카드 노출 (좌우 여백 없이 꽉차게) */}
+      <div className="max-md:block hidden mb-4 max-md:mx-[-20px]">
+        <MobileStatisticsCard
+          title="전체 회원 수"
+          onRefresh={handleRefresh}
+          totalNumbers={totalMembers}
+        />
+      </div>
 
       {/* 상단 정보 섹션 */}
-      <div className="flex mb-[28px]" style={{ width: 1410 }}>
+      <div className="flex mb-[28px] max-md:hidden" style={{ width: 1410 }}>
         <StatisticsCard
           title="회원 수"
           value={totalMembers}
@@ -335,18 +346,18 @@ const MemberManagement = () => {
       </div>
 
       {/* 검색 및 액션 버튼 섹션 */}
-      <div className="flex items-center justify-between mb-[28px]" style={{ width: 1410 }}>
+      <div className="flex items-center justify-between mb-[28px] w-[1410px] max-md:w-full">
         <SearchBar
           placeholder="회원 검색"
           value={searchTerm}
           onChange={handleSearchChange}
           onClear={() => setSearchTerm('')}
-          width={344}
-          height={50}
+          widthClass="w-[344px] max-md:w-full"
+          heightClass="h-[50px] max-md:h-[40px]"
           backgroundColor="white"
         />
 
-        <div className="flex items-center gap-3">
+        <div className="max-md:hidden flex items-center gap-3">
           <div className="filter-dropdown">
             <FilterDropdown
               isOpen={showFilterDropdown}
@@ -373,24 +384,52 @@ const MemberManagement = () => {
             <div className="text-grey03">검색 중...</div>
           </div>
         )}
-        <DataTable
-          data={members as unknown as Record<string, unknown>[]}
-          columns={columns}
-          onRowClick={(row) => handlePartnerDetailClick(row as unknown as Member)}
-          width={1410}
-          height={516}
-          emptyMessage="회원이 없습니다."
-        />
+        {/* 모바일에서만 회원 카드 리스트 */}
+        <div className="max-md:block hidden">
+          {members.map((item) => (
+            <MobileDataTable
+              key={item.id}
+              onLinkClick={() => window.open('/member/' + item.id, '_blank')}
+              fields={[
+                { label: '회원명', value: item.name },
+                { label: '등급', value: item.grade === 'BASIC' ? '우수' : item.grade },
+                { label: '이메일', value: item.email },
+                { label: '전화 번호', value: item.phoneNumber },
+                { label: '생년월일', value: item.birthday },
+              ]}
+            />
+          ))}
+          {/* 모바일 페이지네이션 */}
+          <div className="max-md:block hidden mt-4">
+            <Pagination
+              currentPage={currentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+              width="w-[100%]"
+            />
+          </div>
+        </div>
+        {/* PC 테이블 */}
+        <div className="max-md:hidden">
+          <DataTable
+            data={members as unknown as Record<string, unknown>[]}
+            columns={columns}
+            onRowClick={(row) => handlePartnerDetailClick(row as unknown as Member)}
+            width={1410}
+            height={516}
+            emptyMessage="회원이 없습니다."
+          />
+          {/* PC 페이지네이션 */}
+          <Pagination
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+            width="w-[1410px]"
+          />
+        </div>
       </div>
-
-      {/* 페이지네이션 */}
-      <Pagination
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-        width={1410}
-      />
 
       {/* 회원 상세정보 모달 */}
       <MemberDetailModal

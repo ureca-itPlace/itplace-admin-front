@@ -13,13 +13,15 @@ const RankingList = ({
   subtitle,
   data,
   className = 'w-[546px] h-[345px] max-md:w-full max-md:h-auto',
-  backgroundColor = 'bg-white',
+  backgroundColor = 'bg-white max-md:bg-grey01',
 }: RankingListProps) => {
   return (
     <div className={`${backgroundColor} p-6 rounded-[18px] ${className}`}>
-      <h3 className="text-title-4  mb-4">
+      <h3 className="text-title-4 max-md:text-title-6 mb-4">
         {title}
-        <span className="text-body-1  text-grey04 ml-3">{subtitle}</span>
+        <span className="max-md:block text-body-1 max-md:text-body-3 text-grey04 ml-3 max-md:ml-0 mt-1">
+          {subtitle}
+        </span>
       </h3>
       <div className="space-y-3">
         {data.map((item, index) => (
@@ -31,12 +33,14 @@ const RankingList = ({
             }}
           >
             <div className="flex items-center gap-3">
-              <span className="text-body-1 text-grey05 w-4 mr-[37px]">{index + 1}</span>
-              <span className="text-body-1">{item.partnerName}</span>
+              <span className="text-body-1 max-md:text-body-3 text-grey05 w-4 mr-[37px] max-md:mr-2">
+                {index + 1}
+              </span>
+              <span className="text-body-1 max-md:text-body-3">{item.partnerName}</span>
             </div>
             <div className="flex items-center gap-2">
               <span
-                className={`text-body-2  w-4 text-center transition-all duration-200 ${
+                className={`text-body-2 max-md:text-body-4 w-4 text-center transition-all duration-200 ${
                   item.trend === 'up'
                     ? 'text-orange04'
                     : item.trend === 'down'
@@ -47,7 +51,7 @@ const RankingList = ({
                 {item.trend === 'up' ? '▲' : item.trend === 'down' ? '▼' : '-'}
               </span>
               <span
-                className={`text-body-2  w-8 text-right  transition-all duration-200 ${
+                className={`text-body-2 max-md:text-body-4 w-8 text-right transition-all duration-200 ${
                   item.trend === 'up'
                     ? 'text-orange04'
                     : item.trend === 'down'

@@ -15,6 +15,7 @@ import {
   searchBenefits,
   getTotalBenefitCount,
 } from './apis/PartnershipManagementApis';
+import MobileStatisticsCard from '../../../../components/common/MobileStatisticsCard';
 
 const PartnershipManagement = () => {
   // BenefitFilterToggle 상태
@@ -45,11 +46,26 @@ const PartnershipManagement = () => {
 
   // 제휴처 데이터 로드 함수
   const loadPartners = useCallback(
-    async (page: number = 1) => {
+    async (
+      page: number = 1,
+      sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
+      direction?: 'asc' | 'desc'
+    ) => {
       setIsLoading(true);
       try {
         // mainCategory 매핑
         const mainCategory = benefitToggle === 'vipkok' ? 'VIP_COCK' : 'BASIC_BENEFIT';
+        // API sortBy 변환: searchRank → search, favoriteRank → favorite, usageRank → usage
+        const sortFieldMap = {
+          searchRank: 'search',
+          favoriteRank: 'favorite',
+          usageRank: 'usage',
+        } as const;
+        const sortFieldToSend =
+          (sortBy && sortFieldMap[sortBy as keyof typeof sortFieldMap]) ||
+          (sortField && sortFieldMap[sortField]) ||
+          'id';
+        const sortDirectionToSend = direction || sortDirection || 'asc';
 
         const response = await getAllPartners(
           mainCategory,
@@ -58,8 +74,8 @@ const PartnershipManagement = () => {
           undefined, // keyword
           page - 1, // API는 0부터 시작
           itemsPerPage,
-          'id',
-          'asc'
+          sortFieldToSend,
+          sortDirectionToSend
         );
 
         if (response.data) {
@@ -73,7 +89,7 @@ const PartnershipManagement = () => {
         setIsLoading(false);
       }
     },
-    [selectedCategory, selectedBenefitType, benefitToggle]
+    [selectedCategory, selectedBenefitType, benefitToggle, sortField, sortDirection]
   );
 
   // 초기 데이터 로드
@@ -103,28 +119,47 @@ const PartnershipManagement = () => {
   }, [loadPartners]);
 
   // 검색 API 호출 함수
-  const searchPartners = useCallback(async (searchQuery: string) => {
-    setIsLoading(true);
-    try {
-      const response = await searchBenefits(
-        searchQuery,
-        0, // API는 0부터 시작
-        itemsPerPage,
-        'id',
-        'asc'
-      );
+  const searchPartners = useCallback(
+    async (
+      searchQuery: string,
+      page: number = 1,
+      sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
+      direction?: 'asc' | 'desc'
+    ) => {
+      setIsLoading(true);
+      try {
+        // API sortBy 변환: searchRank → search, favoriteRank → favorite, usageRank → usage
+        const sortFieldMap = {
+          searchRank: 'search',
+          favoriteRank: 'favorite',
+          usageRank: 'usage',
+        } as const;
+        const sortFieldToSend =
+          (sortBy && sortFieldMap[sortBy as keyof typeof sortFieldMap]) ||
+          (sortField && sortFieldMap[sortField]) ||
+          'id';
+        const sortDirectionToSend = direction || sortDirection || 'asc';
+        const response = await searchBenefits(
+          searchQuery,
+          page - 1, // API는 0부터 시작
+          itemsPerPage,
+          sortFieldToSend,
+          sortDirectionToSend
+        );
 
-      if (response.data) {
-        setPartners(response.data.content);
-        setTotalItems(response.data.totalElements);
-        setCurrentPage(1);
+        if (response.data) {
+          setPartners(response.data.content);
+          setTotalItems(response.data.totalElements);
+          setCurrentPage(page);
+        }
+      } catch (error) {
+        console.error('검색 API 호출 실패:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('검색 API 호출 실패:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [sortField, sortDirection]
+  );
 
   // 디바운스된 검색 함수
   const debouncedSearch = useMemo(
@@ -193,32 +228,8 @@ const PartnershipManagement = () => {
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber: number) => {
     if (debouncedSearchTerm) {
-      // 검색 모드일 때는 검색 결과 페이지네이션
-      const searchPagination = async () => {
-        setIsLoading(true);
-        try {
-          const response = await searchBenefits(
-            debouncedSearchTerm,
-            pageNumber - 1, // API는 0부터 시작
-            itemsPerPage,
-            'id',
-            'asc'
-          );
-
-          if (response.data) {
-            setPartners(response.data.content);
-            setTotalItems(response.data.totalElements);
-            setCurrentPage(pageNumber);
-          }
-        } catch (error) {
-          console.error('검색 페이지네이션 실패:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      searchPagination();
+      searchPartners(debouncedSearchTerm, pageNumber);
     } else {
-      // 일반 모드일 때는 전체 데이터 페이지네이션
       loadPartners(pageNumber);
     }
   };
@@ -300,18 +311,24 @@ const PartnershipManagement = () => {
 
   // 정렬 핸들러
   const handleSort = (field: 'searchRank' | 'favoriteRank' | 'usageRank') => {
+    let nextSortField: typeof sortField = field;
+    let nextSortDirection: typeof sortDirection = 'asc';
     if (sortField === field) {
       if (sortDirection === 'asc') {
-        setSortDirection('desc');
+        nextSortDirection = 'desc';
       } else {
-        setSortField(null);
-        setSortDirection('asc');
+        nextSortField = null;
+        nextSortDirection = 'asc';
       }
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
     }
+    setSortField(nextSortField);
+    setSortDirection(nextSortDirection);
     setCurrentPage(1);
+    if (debouncedSearchTerm) {
+      searchPartners(debouncedSearchTerm, 1, nextSortField, nextSortDirection);
+    } else {
+      loadPartners(1, nextSortField, nextSortDirection);
+    }
   };
 
   // 테이블 컬럼 정의
@@ -463,11 +480,18 @@ const PartnershipManagement = () => {
   ];
 
   return (
-    <div className="pl-[28px] pt-[32px] pr-[28px] h-full">
-      <h2 className="text-title-3 mb-[40px]">제휴 관리</h2>
-
+    <div className="pl-[28px] pt-[32px] pr-[28px] h-full max-md:p-0">
+      <h2 className="text-title-3 mb-[40px] max-md:hidden">제휴 관리</h2>
+      {/* 모바일에서만 통계 카드 노출 (좌우 여백 없이 꽉차게) */}
+      <div className="max-md:block hidden mb-4 max-md:mx-[-20px]">
+        <MobileStatisticsCard
+          title="전체 제휴처 수"
+          onRefresh={handleRefresh}
+          totalNumbers={totalPartners}
+        />
+      </div>
       {/* 상단 정보 섹션 */}
-      <div className="flex mb-[28px]" style={{ width: 1410 }}>
+      <div className="flex mb-[28px] max-md:hidden" style={{ width: 1410 }}>
         <StatisticsCard
           title="제휴처 수"
           value={totalPartners}
@@ -492,18 +516,18 @@ const PartnershipManagement = () => {
       </div>
 
       {/* 검색 및 액션 버튼 섹션 */}
-      <div className="flex items-center mb-[28px] justify-between" style={{ width: 1410 }}>
+      <div className="flex max-md:flex-col items-center justify-between mb-[28px] w-[1410px] max-md:w-full">
         <BenefitFilterToggle value={benefitToggle} onChange={setBenefitToggle} />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-md:w-full max-md:mt-3">
           <SearchBar
             placeholder="제휴처 검색"
             value={searchTerm}
             onChange={handleSearchChange}
             onClear={() => setSearchTerm('')}
-            width={344}
-            height={50}
+            widthClass="w-[344px] max-md:w-full"
+            heightClass="h-[50px] max-md:h-[40px]"
           />
-          <div className="filter-dropdown">
+          <div className="max-md:hidden flex gap-3 filter-dropdown">
             <FilterDropdown
               isOpen={showFilterDropdown}
               onToggle={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -511,13 +535,13 @@ const PartnershipManagement = () => {
               onReset={handleFilterReset}
               hasActiveFilters={selectedCategory !== null || selectedBenefitType !== null}
             />
+            <ActionButton
+              icon={<TbRefresh size={20} />}
+              onClick={handleRefresh}
+              variant="primary"
+              size={50}
+            />
           </div>
-          <ActionButton
-            icon={<TbRefresh size={20} />}
-            onClick={handleRefresh}
-            variant="primary"
-            size={50}
-          />
         </div>
       </div>
 
@@ -529,19 +553,7 @@ const PartnershipManagement = () => {
           </div>
         )}
         <DataTable
-          data={(() => {
-            if (!sortField) return partners as unknown as Record<string, unknown>[];
-            const sorted = [...partners].sort((a, b) => {
-              const aValue = a[sortField] as number;
-              const bValue = b[sortField] as number;
-              if (sortDirection === 'asc') {
-                return aValue - bValue;
-              } else {
-                return bValue - aValue;
-              }
-            });
-            return sorted as unknown as Record<string, unknown>[];
-          })()}
+          data={partners as unknown as Record<string, unknown>[]}
           columns={columns}
           onRowClick={(row) => handlePartnerDetailClick(row as unknown as Partner)}
           width={1410}
@@ -556,7 +568,7 @@ const PartnershipManagement = () => {
         itemsPerPage={itemsPerPage}
         totalItems={totalItems}
         onPageChange={handlePageChange}
-        width={1410}
+        width="w-[1410px]"
       />
 
       {/* 제휴처 상세정보 모달 */}
