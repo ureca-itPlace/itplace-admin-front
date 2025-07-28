@@ -46,11 +46,26 @@ const PartnershipManagement = () => {
 
   // 제휴처 데이터 로드 함수
   const loadPartners = useCallback(
-    async (page: number = 1) => {
+    async (
+      page: number = 1,
+      sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
+      direction?: 'asc' | 'desc'
+    ) => {
       setIsLoading(true);
       try {
         // mainCategory 매핑
         const mainCategory = benefitToggle === 'vipkok' ? 'VIP_COCK' : 'BASIC_BENEFIT';
+        // API sortBy 변환: searchRank → search, favoriteRank → favorite, usageRank → usage
+        const sortFieldMap = {
+          searchRank: 'search',
+          favoriteRank: 'favorite',
+          usageRank: 'usage',
+        } as const;
+        const sortFieldToSend =
+          (sortBy && sortFieldMap[sortBy as keyof typeof sortFieldMap]) ||
+          (sortField && sortFieldMap[sortField]) ||
+          'id';
+        const sortDirectionToSend = direction || sortDirection || 'asc';
 
         const response = await getAllPartners(
           mainCategory,
@@ -59,8 +74,8 @@ const PartnershipManagement = () => {
           undefined, // keyword
           page - 1, // API는 0부터 시작
           itemsPerPage,
-          'id',
-          'asc'
+          sortFieldToSend,
+          sortDirectionToSend
         );
 
         if (response.data) {
@@ -74,7 +89,7 @@ const PartnershipManagement = () => {
         setIsLoading(false);
       }
     },
-    [selectedCategory, selectedBenefitType, benefitToggle]
+    [selectedCategory, selectedBenefitType, benefitToggle, sortField, sortDirection]
   );
 
   // 초기 데이터 로드
@@ -104,28 +119,47 @@ const PartnershipManagement = () => {
   }, [loadPartners]);
 
   // 검색 API 호출 함수
-  const searchPartners = useCallback(async (searchQuery: string) => {
-    setIsLoading(true);
-    try {
-      const response = await searchBenefits(
-        searchQuery,
-        0, // API는 0부터 시작
-        itemsPerPage,
-        'id',
-        'asc'
-      );
+  const searchPartners = useCallback(
+    async (
+      searchQuery: string,
+      page: number = 1,
+      sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
+      direction?: 'asc' | 'desc'
+    ) => {
+      setIsLoading(true);
+      try {
+        // API sortBy 변환: searchRank → search, favoriteRank → favorite, usageRank → usage
+        const sortFieldMap = {
+          searchRank: 'search',
+          favoriteRank: 'favorite',
+          usageRank: 'usage',
+        } as const;
+        const sortFieldToSend =
+          (sortBy && sortFieldMap[sortBy as keyof typeof sortFieldMap]) ||
+          (sortField && sortFieldMap[sortField]) ||
+          'id';
+        const sortDirectionToSend = direction || sortDirection || 'asc';
+        const response = await searchBenefits(
+          searchQuery,
+          page - 1, // API는 0부터 시작
+          itemsPerPage,
+          sortFieldToSend,
+          sortDirectionToSend
+        );
 
-      if (response.data) {
-        setPartners(response.data.content);
-        setTotalItems(response.data.totalElements);
-        setCurrentPage(1);
+        if (response.data) {
+          setPartners(response.data.content);
+          setTotalItems(response.data.totalElements);
+          setCurrentPage(page);
+        }
+      } catch (error) {
+        console.error('검색 API 호출 실패:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('검색 API 호출 실패:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [sortField, sortDirection]
+  );
 
   // 디바운스된 검색 함수
   const debouncedSearch = useMemo(
@@ -194,32 +228,8 @@ const PartnershipManagement = () => {
   // 페이지 변경 핸들러
   const handlePageChange = (pageNumber: number) => {
     if (debouncedSearchTerm) {
-      // 검색 모드일 때는 검색 결과 페이지네이션
-      const searchPagination = async () => {
-        setIsLoading(true);
-        try {
-          const response = await searchBenefits(
-            debouncedSearchTerm,
-            pageNumber - 1, // API는 0부터 시작
-            itemsPerPage,
-            'id',
-            'asc'
-          );
-
-          if (response.data) {
-            setPartners(response.data.content);
-            setTotalItems(response.data.totalElements);
-            setCurrentPage(pageNumber);
-          }
-        } catch (error) {
-          console.error('검색 페이지네이션 실패:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      searchPagination();
+      searchPartners(debouncedSearchTerm, pageNumber);
     } else {
-      // 일반 모드일 때는 전체 데이터 페이지네이션
       loadPartners(pageNumber);
     }
   };
@@ -301,18 +311,24 @@ const PartnershipManagement = () => {
 
   // 정렬 핸들러
   const handleSort = (field: 'searchRank' | 'favoriteRank' | 'usageRank') => {
+    let nextSortField: typeof sortField = field;
+    let nextSortDirection: typeof sortDirection = 'asc';
     if (sortField === field) {
       if (sortDirection === 'asc') {
-        setSortDirection('desc');
+        nextSortDirection = 'desc';
       } else {
-        setSortField(null);
-        setSortDirection('asc');
+        nextSortField = null;
+        nextSortDirection = 'asc';
       }
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
     }
+    setSortField(nextSortField);
+    setSortDirection(nextSortDirection);
     setCurrentPage(1);
+    if (debouncedSearchTerm) {
+      searchPartners(debouncedSearchTerm, 1, nextSortField, nextSortDirection);
+    } else {
+      loadPartners(1, nextSortField, nextSortDirection);
+    }
   };
 
   // 테이블 컬럼 정의
@@ -537,19 +553,7 @@ const PartnershipManagement = () => {
           </div>
         )}
         <DataTable
-          data={(() => {
-            if (!sortField) return partners as unknown as Record<string, unknown>[];
-            const sorted = [...partners].sort((a, b) => {
-              const aValue = a[sortField] as number;
-              const bValue = b[sortField] as number;
-              if (sortDirection === 'asc') {
-                return aValue - bValue;
-              } else {
-                return bValue - aValue;
-              }
-            });
-            return sorted as unknown as Record<string, unknown>[];
-          })()}
+          data={partners as unknown as Record<string, unknown>[]}
           columns={columns}
           onRowClick={(row) => handlePartnerDetailClick(row as unknown as Partner)}
           width={1410}
