@@ -1,13 +1,19 @@
 import React from 'react';
-import { TbAdjustmentsHorizontal } from 'react-icons/tb';
+import { TbAdjustmentsHorizontal, TbArrowsDownUp } from 'react-icons/tb';
 
 interface FilterButtonProps {
   label: string;
   onClick: () => void;
   active?: boolean;
+  iconType?: 'adjust' | 'arrows';
 }
 
-const FilterButton: React.FC<FilterButtonProps> = ({ label, onClick, active }) => (
+const FilterButton: React.FC<FilterButtonProps> = ({
+  label,
+  onClick,
+  active,
+  iconType = 'adjust',
+}) => (
   <button
     type="button"
     onClick={() => {
@@ -18,7 +24,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({ label, onClick, active }) =
       active ? 'border-purple04 text-purple04 bg-purple01' : 'text-grey04'
     }`}
   >
-    <TbAdjustmentsHorizontal size={18} className={active ? 'text-purple04' : 'text-purple04'} />
+    {iconType === 'arrows' ? (
+      <TbArrowsDownUp size={18} className={active ? 'text-purple04' : 'text-purple04'} />
+    ) : (
+      <TbAdjustmentsHorizontal size={18} className={active ? 'text-purple04' : 'text-purple04'} />
+    )}
     {label}
   </button>
 );
@@ -29,6 +39,7 @@ interface FilterButtonGroupProps {
     label: string;
     onClick: () => void;
     active?: boolean;
+    iconType?: 'adjust' | 'arrows'; // 모바일 순위 정렬 버튼에 arrows 아이콘 적용 가능
   }>;
   className?: string;
   dropdowns?: React.ReactNode[];

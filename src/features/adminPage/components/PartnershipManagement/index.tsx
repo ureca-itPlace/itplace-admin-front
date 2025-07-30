@@ -30,7 +30,6 @@ const PartnershipManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBenefitType, setSelectedBenefitType] = useState<string | null>(null);
@@ -58,7 +57,6 @@ const PartnershipManagement = () => {
       sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
       direction?: 'asc' | 'desc'
     ) => {
-      setIsLoading(true);
       try {
         // mainCategory 매핑
         const mainCategory = benefitToggle === 'vipkok' ? 'VIP_COCK' : 'BASIC_BENEFIT';
@@ -92,8 +90,6 @@ const PartnershipManagement = () => {
         }
       } catch (error) {
         console.error('제휴처 데이터 로드 실패:', error);
-      } finally {
-        setIsLoading(false);
       }
     },
     [selectedCategory, selectedBenefitType, benefitToggle, sortField, sortDirection]
@@ -103,7 +99,6 @@ const PartnershipManagement = () => {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        setIsLoading(true);
         // 전체 제휴처 수 조회
         const countResponse = await getTotalBenefitCount();
         if (countResponse.data) {
@@ -117,8 +112,6 @@ const PartnershipManagement = () => {
         await loadPartners(1);
       } catch (error) {
         console.error('초기 데이터 로드 실패:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -133,7 +126,6 @@ const PartnershipManagement = () => {
       sortBy?: 'searchRank' | 'favoriteRank' | 'usageRank' | null,
       direction?: 'asc' | 'desc'
     ) => {
-      setIsLoading(true);
       try {
         // API sortBy 변환: searchRank → search, favoriteRank → favorite, usageRank → usage
         const sortFieldMap = {
@@ -161,8 +153,6 @@ const PartnershipManagement = () => {
         }
       } catch (error) {
         console.error('검색 API 호출 실패:', error);
-      } finally {
-        setIsLoading(false);
       }
     },
     [sortField, sortDirection]
@@ -243,7 +233,6 @@ const PartnershipManagement = () => {
 
   const handleRefresh = async () => {
     try {
-      setIsLoading(true);
       // 전체 제휴처 수 조회
       const countResponse = await getTotalBenefitCount();
       if (countResponse.data) {
@@ -258,8 +247,6 @@ const PartnershipManagement = () => {
       console.log('데이터 새로고침 완료');
     } catch (error) {
       console.error('데이터 새로고침 실패:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -373,7 +360,22 @@ const PartnershipManagement = () => {
       sortable: true,
       headerRender: () => (
         <button
-          onClick={() => handleSort('searchRank')}
+          onClick={() => {
+            if (sortField !== 'searchRank') {
+              handleSort('searchRank', 'asc');
+            } else if (sortDirection === 'asc') {
+              handleSort('searchRank', 'desc');
+            } else {
+              setSortField(null);
+              setSortDirection('asc');
+              setCurrentPage(1);
+              if (debouncedSearchTerm) {
+                searchPartners(debouncedSearchTerm, 1, null, 'asc');
+              } else {
+                loadPartners(1, null, 'asc');
+              }
+            }
+          }}
           className={`flex items-center justify-start transition-colors duration-150 ${
             sortField === 'searchRank' ? 'text-orange04 rounded-[4px]' : 'text-grey05'
           }`}
@@ -388,12 +390,27 @@ const PartnershipManagement = () => {
     },
     {
       key: 'favoriteRank',
-      label: '즐겨찾기 순위',
+      label: '관심혜택 순위',
       width: '120px',
       sortable: true,
       headerRender: () => (
         <button
-          onClick={() => handleSort('favoriteRank')}
+          onClick={() => {
+            if (sortField !== 'favoriteRank') {
+              handleSort('favoriteRank', 'asc');
+            } else if (sortDirection === 'asc') {
+              handleSort('favoriteRank', 'desc');
+            } else {
+              setSortField(null);
+              setSortDirection('asc');
+              setCurrentPage(1);
+              if (debouncedSearchTerm) {
+                searchPartners(debouncedSearchTerm, 1, null, 'asc');
+              } else {
+                loadPartners(1, null, 'asc');
+              }
+            }
+          }}
           className={`flex items-center justify-start transition-colors duration-150 ${
             sortField === 'favoriteRank' ? ' text-orange04 rounded-[4px]' : 'text-grey05'
           }`}
@@ -413,7 +430,22 @@ const PartnershipManagement = () => {
       sortable: true,
       headerRender: () => (
         <button
-          onClick={() => handleSort('usageRank')}
+          onClick={() => {
+            if (sortField !== 'usageRank') {
+              handleSort('usageRank', 'asc');
+            } else if (sortDirection === 'asc') {
+              handleSort('usageRank', 'desc');
+            } else {
+              setSortField(null);
+              setSortDirection('asc');
+              setCurrentPage(1);
+              if (debouncedSearchTerm) {
+                searchPartners(debouncedSearchTerm, 1, null, 'asc');
+              } else {
+                loadPartners(1, null, 'asc');
+              }
+            }
+          }}
           className={`flex items-center justify-start transition-colors duration-150 ${
             sortField === 'usageRank' ? ' text-orange04 rounded-[4px]' : 'text-grey05'
           }`}
@@ -565,6 +597,7 @@ const PartnershipManagement = () => {
                 label: '순위 정렬',
                 onClick: () => setOpenMobileFilter(openMobileFilter === 'sort' ? null : 'sort'),
                 active: sortField !== null,
+                iconType: 'arrows',
               },
             ]}
           />
@@ -604,7 +637,7 @@ const PartnershipManagement = () => {
                     }
                   }}
                 >
-                  초기화
+                  기본 정렬
                 </button>
               </div>
               <div className="border-b border-grey02">
@@ -629,7 +662,7 @@ const PartnershipManagement = () => {
                 </button>
               </div>
               <div className="border-b border-grey02">
-                <div className="px-4 py-2 text-body-2 text-black">즐겨찾기 순위</div>
+                <div className="px-4 py-2 text-body-2 text-black">관심혜택 순위</div>
                 <button
                   className={`w-full py-2 px-4 text-left text-body-3 ${sortField === 'favoriteRank' && sortDirection === 'asc' ? 'bg-purple01 text-purple04' : 'text-grey07'}`}
                   onClick={() => {
