@@ -26,7 +26,7 @@ const Modal: React.FC<ModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-[20px] relative overflow-hidden"
+        className="bg-white rounded-[20px] relative overflow-hidden max-md:m-5"
         style={{ width, height }}
         onClick={(e) => e.stopPropagation()}
       >
