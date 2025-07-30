@@ -32,7 +32,7 @@ const EditingSection: React.FC<EditingSectionProps> = ({
   isTierBenefits = false,
 }) => (
   <div className="flex mb-8 ml-[16px]">
-    <h5 className="text-title-5 max-md:text-body-0 text-black mb-4 w-[100px] flex-shrink-0 ">
+    <h5 className="text-title-5 max-md:text-body-2 text-black mb-4 w-[100px] flex-shrink-0 ">
       {label}
     </h5>
     <div className="pl-[24px] flex-1">
@@ -42,8 +42,8 @@ const EditingSection: React.FC<EditingSectionProps> = ({
             <div className="space-y-2">
               {value.map((tier, index) => (
                 <div key={index} className="mb-4">
-                  <div className="text-body-0 max-md:text-body-2 text-black mb-2">{tier.grade}</div>
-                  <div className="text-body-0 max-md:text-body-2 text-black">{tier.context}</div>
+                  <div className="text-body-0 max-md:text-body-3 text-black mb-2">{tier.grade}</div>
+                  <div className="text-body-0 max-md:text-body-3 text-black">{tier.context}</div>
                 </div>
               ))}
             </div>
@@ -52,7 +52,7 @@ const EditingSection: React.FC<EditingSectionProps> = ({
               <select
                 value={typeof value === 'string' ? value : ''}
                 onChange={(e) => onChange(e.target.value)}
-                className={`text-body-0 max-md:text-body-2 text-black bg-grey01 border border-grey02 rounded-[10px] px-2 py-3 w-full  ${className}`}
+                className={`text-body-0 max-md:text-body-3 text-black bg-grey01 border border-grey02 rounded-[10px] px-2 py-3 w-full  ${className}`}
               >
                 <option value="">{placeholder}</option>
                 {options.map((option) => (
@@ -65,12 +65,12 @@ const EditingSection: React.FC<EditingSectionProps> = ({
               <textarea
                 value={typeof value === 'string' ? value : ''}
                 onChange={(e) => onChange(e.target.value)}
-                className={`text-body-0 max-md:text-body-2 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none ${className}`}
+                className={`text-body-0 max-md:text-body-3 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none ${className}`}
                 placeholder={placeholder}
               />
             )
           ) : (
-            <div className="text-body-0 max-md:text-body-2 text-grey05 whitespace-pre-line">
+            <div className="text-body-0 max-md:text-body-3 text-grey05 whitespace-pre-line">
               {typeof value === 'string' ? value : ''}
             </div>
           )}
