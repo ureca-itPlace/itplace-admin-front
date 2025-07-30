@@ -51,6 +51,12 @@ export interface BenefitDetail {
   tierBenefits: TierBenefit[];
 }
 
+// 혜택 정보 수정 요청 타입 (API 명세 기반)
+export interface BenefitUpdateRequest {
+  benefitLimit: string; // 월 1회, 일 1회, 제한없음, 최초 1회 중 하나
+  manual: string;
+}
+
 // 배치 갱신 결과 타입
 export interface BenefitBatchRefreshResult {
   totalProcessed: number;
@@ -124,16 +130,16 @@ export const searchBenefits = async (
 
 // 혜택 상세 조회 API
 export const getBenefitDetail = async (benefitId: number): Promise<ApiResponse<BenefitDetail>> => {
-  const response = await api.get(`/api/v1/benefit/${benefitId}`);
+  const response = await api.get(`/api/v1/benefits/${benefitId}`);
   return response.data;
 };
 
 // 혜택 정보 수정 API
 export const updateBenefit = async (
   benefitId: number,
-  benefitData: { benefitLimit?: string; manual?: string }
+  benefitData: BenefitUpdateRequest
 ): Promise<ApiResponse<null>> => {
-  const response = await api.put(`/api/v1/benefit/${benefitId}`, benefitData);
+  const response = await api.put(`/api/v1/benefits/${benefitId}`, benefitData);
   return response.data;
 };
 

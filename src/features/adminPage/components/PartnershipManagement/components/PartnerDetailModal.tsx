@@ -5,15 +5,19 @@ import {
   getBenefitDetail,
   updateBenefit,
   BenefitDetail,
+  TierBenefit,
 } from '../apis/PartnershipManagementApis';
 
 interface EditingSectionProps {
   label: string;
-  value: string;
-  onChange: (v: string) => void;
+  value: string | TierBenefit[];
+  onChange: (v: string | TierBenefit[]) => void;
   placeholder: string;
   isEditing: boolean;
   className?: string;
+  isDropdown?: boolean;
+  options?: string[];
+  isTierBenefits?: boolean;
 }
 
 const EditingSection: React.FC<EditingSectionProps> = ({
@@ -23,21 +27,52 @@ const EditingSection: React.FC<EditingSectionProps> = ({
   placeholder,
   isEditing,
   className = '',
+  isDropdown = false,
+  options = [],
+  isTierBenefits = false,
 }) => (
-  <div className="flex mb-8 ml-[16px]">
-    <h5 className="text-title-5 text-black mb-4 w-[100px] flex-shrink-0">{label}</h5>
-    <div className="pl-[24px] flex-1">
+  <div className="flex mb-8 ml-[16px] max-md:flex-col">
+    <h5 className="text-title-5 max-md:text-title-5 text-black mb-4 w-[100px] flex-shrink-0 max-md:w-full max-md:mb-4">
+      {label}
+    </h5>
+    <div className="pl-[24px] flex-1 max-md:pl-0">
       <div className="space-y-3">
         <div>
-          {isEditing ? (
-            <textarea
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              className={`text-body-0 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none ${className}`}
-              placeholder={placeholder}
-            />
+          {isTierBenefits && Array.isArray(value) ? (
+            <div className="space-y-2">
+              {value.map((tier, index) => (
+                <div key={index} className="mb-4">
+                  <div className="text-body-0 max-md:text-body-3 text-black mb-2">{tier.grade}</div>
+                  <div className="text-body-0 max-md:text-body-3 text-black">{tier.context}</div>
+                </div>
+              ))}
+            </div>
+          ) : isEditing ? (
+            isDropdown ? (
+              <select
+                value={typeof value === 'string' ? value : ''}
+                onChange={(e) => onChange(e.target.value)}
+                className={`text-body-0 max-md:text-body-3 text-black bg-grey01 border border-grey02 rounded-[10px] px-2 py-3 w-full  ${className}`}
+              >
+                <option value="">{placeholder}</option>
+                {options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <textarea
+                value={typeof value === 'string' ? value : ''}
+                onChange={(e) => onChange(e.target.value)}
+                className={`text-body-0 max-md:text-body-3 text-grey05 bg-grey01 border border-grey02 rounded-[10px] px-2 py-1 w-full h-[150px] resize-none ${className}`}
+                placeholder={placeholder}
+              />
+            )
           ) : (
-            <div className="text-body-0 text-grey05 whitespace-pre-line">{value}</div>
+            <div className="text-body-0 max-md:text-body-3 text-grey05 whitespace-pre-line">
+              {typeof value === 'string' ? value : ''}
+            </div>
           )}
         </div>
       </div>
@@ -55,11 +90,18 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [benefitDetail, setBenefitDetail] = useState<BenefitDetail | null>(null);
-  const [editData, setEditData] = useState({
-    benefitContent: '',
+  const [editData, setEditData] = useState<{
+    benefitContent: TierBenefit[];
+    benefitInfo: string;
+    usageMethod: string;
+  }>({
+    benefitContent: [],
     benefitInfo: '',
     usageMethod: '',
   });
+
+  // 제공횟수 옵션들
+  const frequencyOptions = ['월 1회', '일 1회', '제한없음', '최초 1회'];
 
   // 혜택 상세 정보 로드
   const loadBenefitDetail = useCallback(async () => {
@@ -70,23 +112,18 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
       const response = await getBenefitDetail(partner.benefitId);
       if (response.data) {
         setBenefitDetail(response.data);
-        // API 데이터를 UI 필드에 매핑
         setEditData({
-          benefitContent: response.data.benefitLimit || '',
-          benefitInfo: response.data.description || '',
+          benefitContent: response.data.tierBenefits || [],
+          benefitInfo: response.data.benefitLimit || '',
           usageMethod: response.data.manual || '',
         });
       }
     } catch (error) {
       console.error('혜택 상세 정보 로드 실패:', error);
-      // 에러 시 기본 데이터 설정
       setEditData({
-        benefitContent:
-          '① VVIP/VIP: 4천원 할인\n우수: 2천원 할인\n② 오리지널/카라멜팝콘 L 4천원 구매권\nor 콤보 3천원 할인권(예매 건당 1매)',
-        benefitInfo:
-          'VVIP/VIP 등급 정보\nVIP관 내 무료예매 연3회/1+1예매 연9회(총 12회)\n(월 1회 사용 가능, CGV/메가박스 중 택 1)',
-        usageMethod:
-          '메가박스 웹/앱 > 영화예매 > 제휴포인트 > U+멤버십 > VIP콕 할인 > 멤버십 조회 > VIP콕 3개 헤택 중 1개 선택 > 예매\n\n*꼭 확인하세요\n- VIP콕 무료/1+1 혜택은 2D, 일반컨텐츠에 한하여 적용 가능하며, 일반관, 컴포트관만 예매 할 수 있습니다.- VIP콕 특별관 6천원 할인 혜택은 더부티크, Dolby Atmos, 더부티크스위트, Dolby Cinema, MX4D관에 한하여 적용 가능합니다.',
+        benefitContent: [],
+        benefitInfo: '',
+        usageMethod: '',
       });
     } finally {
       setIsLoading(false);
@@ -110,15 +147,13 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
 
     setIsLoading(true);
     try {
-      // UI 데이터를 API 형식으로 매핑
       const apiData = {
-        benefitLimit: editData.benefitContent,
+        benefitLimit: editData.benefitInfo,
         manual: editData.usageMethod,
       };
       await updateBenefit(partner.benefitId, apiData);
       console.log('혜택 정보 수정 완료');
       setIsEditing(false);
-      // 상세 정보 다시 로드
       await loadBenefitDetail();
     } catch (error) {
       console.error('혜택 정보 수정 실패:', error);
@@ -129,17 +164,17 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
 
   const handleCancel = () => {
     setIsEditing(false);
-    // 원래 데이터로 복원
+    // 원래 데이터로 복원 (BenefitDetailModal과 동일하게)
     if (benefitDetail) {
       setEditData({
-        benefitContent: benefitDetail.benefitLimit || '',
-        benefitInfo: benefitDetail.description || '',
+        benefitContent: benefitDetail.tierBenefits || [],
+        benefitInfo: benefitDetail.benefitLimit || '',
         usageMethod: benefitDetail.manual || '',
       });
     }
   };
 
-  const handleInputChange = (field: keyof typeof editData, value: string) => {
+  const handleInputChange = (field: keyof typeof editData, value: string | TierBenefit[]) => {
     setEditData((prev) => ({
       ...prev,
       [field]: value,
@@ -161,9 +196,11 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
               <div className="flex items-center justify-between mb-[28px]">
                 <div className="flex items-center ml-[16px]">
                   <div>
-                    <h4 className="text-title-2 text-black mb-1">{partner.benefitName}</h4>
-                    <p className="text-body-0 text-grey05 mt-1">
-                      영화보다 멋진 당신의 일상을 위하여, 라이프스타일 매거진스!
+                    <h4 className="text-title-2 text-black mb-1 max-md:text-title-4">
+                      {partner.benefitName}
+                    </h4>
+                    <p className="text-body-0 text-grey05 mt-1 max-md:text-body-2">
+                      {benefitDetail?.description || '혜택 설명이 없습니다.'}
                     </p>
                   </div>
                 </div>
@@ -181,8 +218,10 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
                 label="제공 횟수"
                 value={editData.benefitInfo}
                 onChange={(v) => handleInputChange('benefitInfo', v)}
-                placeholder="제공 횟수 정보를 입력하세요"
+                placeholder="제공 횟수를 선택하세요"
                 isEditing={isEditing}
+                isDropdown={true}
+                options={frequencyOptions}
               />
               {/*혜택 내용 섹션*/}
               <EditingSection
@@ -191,6 +230,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
                 onChange={(v) => handleInputChange('benefitContent', v)}
                 placeholder="혜택 내용을 입력하세요"
                 isEditing={isEditing}
+                isTierBenefits={true}
               />
               {/*이용방법 섹션*/}
               <EditingSection
@@ -210,13 +250,13 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
             <>
               <button
                 onClick={handleCancel}
-                className="w-[218px] h-[52px] bg-white text-grey05 rounded-[30px] text-body-0 font-medium border border-grey03"
+                className="w-[218px] max-md:w-1/3 h-[52px]  bg-white text-grey05 rounded-[30px] text-body-0 font-medium border border-grey03 max-md:text-body-2"
               >
                 취소하기
               </button>
               <button
                 onClick={handleSave}
-                className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium"
+                className="w-[218px] max-md:w-1/3 h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium max-md:text-body-2"
               >
                 저장하기
               </button>
@@ -224,7 +264,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
           ) : (
             <button
               onClick={handleEdit}
-              className="w-[218px] h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium "
+              className="w-[218px] max-md:w-1/2 h-[52px] bg-purple04 text-white rounded-[30px] text-body-0 font-medium max-md:text-body-2"
             >
               수정하기
             </button>
