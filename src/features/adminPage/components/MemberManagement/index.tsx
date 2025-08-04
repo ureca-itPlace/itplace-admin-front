@@ -17,7 +17,7 @@ import {
   getMembersWithPagination,
   getMemberStatistics,
 } from './apis/MemberManagementApis';
-import { parseKSTTimestamp } from '../../../../utils/timestamp';
+import { parseKSTTimestamp, getKSTTimestamp } from '../../../../utils/timestamp';
 import MobileDataTable from '../../../../components/common/MobileDataTable';
 
 const MemberManagement = () => {
@@ -72,19 +72,9 @@ const MemberManagement = () => {
         setIsLoading(true);
         const statistics = await getMemberStatistics();
         setTotalMembers(statistics.totalUsers);
-        if (statistics.timestamp) {
-          const { date, time } = parseKSTTimestamp(statistics.timestamp);
-          if (date && time) {
-            setLastUpdated(`${date} ${time}`);
-          } else {
-            // fallback: 현재 시간으로 설정
-            const now = new Date();
-            const { date: nowDate, time: nowTime } = parseKSTTimestamp(now);
-            setLastUpdated(`${nowDate} ${nowTime}`);
-          }
-        } else {
-          setLastUpdated('');
-        }
+        // 제휴 관리와 동일하게 현재 시간을 KST로 설정
+        const { date, time } = parseKSTTimestamp(getKSTTimestamp());
+        setLastUpdated(`${date} ${time}`);
         await loadMembers(1);
       } catch {
         // 에러 발생 시 무시
@@ -209,19 +199,9 @@ const MemberManagement = () => {
       setIsLoading(true);
       const statistics = await getMemberStatistics();
       setTotalMembers(statistics.totalUsers);
-      if (statistics.timestamp) {
-        const { date, time } = parseKSTTimestamp(statistics.timestamp);
-        if (date && time) {
-          setLastUpdated(`${date} ${time}`);
-        } else {
-          // fallback: 현재 시간으로 설정
-          const now = new Date();
-          const { date: nowDate, time: nowTime } = parseKSTTimestamp(now);
-          setLastUpdated(`${nowDate} ${nowTime}`);
-        }
-      } else {
-        setLastUpdated('');
-      }
+      // 제휴 관리와 동일하게 현재 시간을 KST로 설정
+      const { date, time } = parseKSTTimestamp(getKSTTimestamp());
+      setLastUpdated(`${date} ${time}`);
       setSearchTerm('');
       setDebouncedSearchTerm('');
       setCurrentPage(1);
