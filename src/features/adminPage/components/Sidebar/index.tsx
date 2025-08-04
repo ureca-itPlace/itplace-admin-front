@@ -23,7 +23,6 @@ const Sidebar = ({ onTabChange }: SidebarProps) => {
     { id: 'dashboard', label: '대시 보드', icon: TbLayoutDashboard },
     { id: 'users', label: '사용자 관리', icon: TbUser },
     { id: 'partners', label: '제휴 관리', icon: TbBuildingStore },
-    { id: 'ai', label: 'AI 분석', icon: TbSocial },
     { id: 'logout', label: '로그아웃', icon: TbLogout2 },
   ];
 
