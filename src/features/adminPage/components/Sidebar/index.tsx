@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { TbLayoutDashboard } from 'react-icons/tb';
 import { TbUser } from 'react-icons/tb';
 import { TbBuildingStore } from 'react-icons/tb';
-import { TbSocial } from 'react-icons/tb';
 import { TbLogout2 } from 'react-icons/tb';
 import { useAuth } from '../../../../hooks/useAuth';
 import { showToast } from '../../../../utils/toast';
