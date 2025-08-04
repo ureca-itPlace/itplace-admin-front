@@ -19,8 +19,16 @@ export const getKSTTimestamp = (): string => {
 export const parseKSTTimestamp = (timestamp: string | Date) => {
   const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-  // KST로 변환
-  const kstTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  // 이미 KST인지 UTC인지 확인하여 적절히 처리
+  let kstTime: Date;
+
+  if (typeof timestamp === 'string' && timestamp.includes('+09:00')) {
+    // 이미 KST로 표시된 경우
+    kstTime = date;
+  } else {
+    // UTC로 간주하고 KST로 변환
+    kstTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  }
 
   const year = kstTime.getUTCFullYear();
   const month = String(kstTime.getUTCMonth() + 1).padStart(2, '0');
