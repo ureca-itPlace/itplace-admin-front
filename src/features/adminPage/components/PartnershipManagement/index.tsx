@@ -88,8 +88,8 @@ const PartnershipManagement = () => {
           setTotalItems(response.data.totalElements);
           setCurrentPage(page);
         }
-      } catch (error) {
-        console.error('제휴처 데이터 로드 실패:', error);
+      } catch {
+        // 에러 발생 시 무시
       }
     },
     [selectedCategory, selectedBenefitType, benefitToggle, sortField, sortDirection]
@@ -110,8 +110,8 @@ const PartnershipManagement = () => {
 
         // 첫 페이지 데이터 로드
         await loadPartners(1);
-      } catch (error) {
-        console.error('초기 데이터 로드 실패:', error);
+      } catch {
+        // 에러 발생 시 무시
       }
     };
 
@@ -151,8 +151,8 @@ const PartnershipManagement = () => {
           setTotalItems(response.data.totalElements);
           setCurrentPage(page);
         }
-      } catch (error) {
-        console.error('검색 API 호출 실패:', error);
+      } catch {
+        // 에러 발생 시 무시
       }
     },
     [sortField, sortDirection]
@@ -244,9 +244,8 @@ const PartnershipManagement = () => {
       setDebouncedSearchTerm('');
       setCurrentPage(1);
       await loadPartners(1);
-      console.log('데이터 새로고침 완료');
-    } catch (error) {
-      console.error('데이터 새로고침 실패:', error);
+    } catch {
+      // 에러 발생 시 무시
     }
   };
 

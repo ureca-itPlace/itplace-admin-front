@@ -23,8 +23,7 @@ const MemberDetailModal: React.FC<MemberDetailModalProps> = ({ isOpen, member, o
         const response = await getUserBenefitUsage(member.id);
         setMembershipUsage(response.data.membershipUsage);
         setMembershipId(response.data.membershipId);
-      } catch (error) {
-        console.error('회원 상세 정보 로드 실패:', error);
+      } catch {
         setMembershipUsage([]);
         setMembershipId(null);
       } finally {

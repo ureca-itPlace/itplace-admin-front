@@ -1,10 +1,4 @@
 import api from '../../../../../apis/axiosInstance';
-import {
-  mockSearchRanking,
-  mockWishlistRanking,
-  mockClickStatistics,
-  mockUsageStatistics,
-} from '../data/mockData';
 
 // 제휴처 검색 순위 관련 타입
 export interface PartnerSearchRankingItem {
@@ -66,15 +60,13 @@ export const getPartnersSearchRanking = async (
 
     const response = await api.get(`/api/v1/partners/search-ranking?${params}`);
     return response.data;
-  } catch (error) {
-    console.error('제휴처 검색 순위 조회 실패:', error);
-    // 에러 시 더미 데이터 반환
-    const limitedData = mockSearchRanking.slice(0, limit);
+  } catch {
+    // 에러 시 빈 데이터 반환
     return {
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: limitedData,
+      data: [],
       timestamp: new Date().toISOString(),
     };
   }
@@ -91,15 +83,13 @@ export const getMostClickedPartners = async (
 
     const response = await api.get(`/api/v1/benefits/most-clicked?${params}`);
     return response.data;
-  } catch (error) {
-    console.error('자주 클릭한 제휴처 조회 실패:', error);
-    // 에러 시 더미 데이터 반환
-    const limitedData = mockClickStatistics.slice(0, limit);
+  } catch {
+    // 에러 시 빈 데이터 반환
     return {
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: limitedData,
+      data: [],
       timestamp: new Date().toISOString(),
     };
   }
@@ -116,15 +106,13 @@ export const getFavoritesStatistics = async (
 
     const response = await api.get(`/api/v1/benefits/favorite?${params}`);
     return response.data;
-  } catch (error) {
-    console.error('즐겨찾기 통계 조회 실패:', error);
-    // 에러 시 더미 데이터 반환
-    const limitedData = mockWishlistRanking.slice(0, limit);
+  } catch {
+    // 에러 시 빈 데이터 반환
     return {
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: limitedData,
+      data: [],
       timestamp: new Date().toISOString(),
     };
   }
@@ -141,14 +129,13 @@ export const getPartnerUsageStats = async (
 
     const response = await api.get(`/api/v1/partners/usage?${params}`);
     return response.data;
-  } catch (error) {
-    console.error('제휴처별 이용 통계 조회 실패:', error);
-    // 에러 시 더미 데이터 반환
+  } catch {
+    // 에러 시 빈 데이터 반환
     return {
       code: '200',
       status: 'SUCCESS',
       message: '성공',
-      data: mockUsageStatistics,
+      data: [],
       timestamp: new Date().toISOString(),
     };
   }

@@ -55,8 +55,8 @@ const MemberManagement = () => {
         setMembers(response.data);
         setTotalItems(response.totalItems);
         setCurrentPage(response.currentPage);
-      } catch (error) {
-        console.error('회원 데이터 로드 실패:', error);
+      } catch {
+        // 에러 발생 시 무시
       } finally {
         setIsLoading(false);
       }
@@ -79,8 +79,8 @@ const MemberManagement = () => {
           setLastUpdated('');
         }
         await loadMembers(1);
-      } catch (error) {
-        console.error('초기 데이터 로드 실패:', error);
+      } catch {
+        // 에러 발생 시 무시
       } finally {
         setIsLoading(false);
       }
@@ -97,8 +97,8 @@ const MemberManagement = () => {
       setMembers(response.data);
       setTotalItems(response.totalItems);
       setCurrentPage(1);
-    } catch (error) {
-      console.error('검색 API 호출 실패:', error);
+    } catch {
+      // 에러 발생 시 무시
     } finally {
       setIsLoading(false);
     }
@@ -184,8 +184,8 @@ const MemberManagement = () => {
           setMembers(response.data);
           setTotalItems(response.totalItems);
           setCurrentPage(pageNumber);
-        } catch (error) {
-          console.error('검색 페이지네이션 실패:', error);
+        } catch {
+          // 에러 발생 시 무시
         } finally {
           setIsLoading(false);
         }
@@ -213,9 +213,8 @@ const MemberManagement = () => {
       setDebouncedSearchTerm('');
       setCurrentPage(1);
       await loadMembers(1);
-      console.log('데이터 새로고침 완료');
-    } catch (error) {
-      console.error('데이터 새로고침 실패:', error);
+    } catch {
+      // 에러 발생 시 무시
     } finally {
       setIsLoading(false);
     }

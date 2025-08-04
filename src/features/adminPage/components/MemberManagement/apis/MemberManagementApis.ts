@@ -1,5 +1,4 @@
 import api from '../../../../../apis/axiosInstance';
-import { getMockMembersPage, searchMockMembers, mockMemberStatistics } from '../data/mockData';
 
 // API 응답 타입
 export interface ApiResponse<T = unknown> {
@@ -161,10 +160,15 @@ export const getMembersWithPagination = async (
       currentPage: page,
       itemsPerPage: itemsPerPage,
     };
-  } catch (error) {
-    console.error('Failed to fetch members:', error);
-    // 에러 발생시 더미 데이터 반환
-    return getMockMembersPage(page, itemsPerPage, userType, grade);
+  } catch {
+    // 에러 발생시 빈 데이터 반환
+    return {
+      data: [],
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+    };
   }
 };
 
@@ -193,10 +197,15 @@ export const searchMembersWithPagination = async (
       currentPage: page,
       itemsPerPage: itemsPerPage,
     };
-  } catch (error) {
-    console.error('Failed to search members:', error);
-    // 에러 발생시 더미 데이터 반환
-    return searchMockMembers(keyword, page, itemsPerPage);
+  } catch {
+    // 에러 발생시 빈 데이터 반환
+    return {
+      data: [],
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: page,
+      itemsPerPage: itemsPerPage,
+    };
   }
 };
 
@@ -207,9 +216,11 @@ export const getMemberStatistics = async (): Promise<MemberStatistics> => {
       totalUsers: response.data,
       timestamp: response.timestamp,
     };
-  } catch (error) {
-    console.error('Failed to fetch member statistics:', error);
-    // 에러 발생시 더미 데이터 반환
-    return mockMemberStatistics;
+  } catch {
+    // 에러 발생시 빈 데이터 반환
+    return {
+      totalUsers: 0,
+      timestamp: new Date().toISOString(),
+    };
   }
 };

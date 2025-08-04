@@ -39,8 +39,7 @@ const LoginPage = () => {
       } else {
         showToast(res.message || '로그인에 실패했습니다.', 'error');
       }
-    } catch (error) {
-      console.error('로그인 실패:', error);
+    } catch {
       showToast('로그인에 실패했습니다. 다시 시도해주세요.', 'error');
     } finally {
       setIsLoading(false);

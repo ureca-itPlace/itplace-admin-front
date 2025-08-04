@@ -118,8 +118,7 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
           usageMethod: response.data.manual || '',
         });
       }
-    } catch (error) {
-      console.error('혜택 상세 정보 로드 실패:', error);
+    } catch {
       setEditData({
         benefitContent: [],
         benefitInfo: '',
@@ -152,11 +151,10 @@ const PartnerDetailModal: React.FC<PartnerDetailModalProps> = ({ isOpen, partner
         manual: editData.usageMethod,
       };
       await updateBenefit(partner.benefitId, apiData);
-      console.log('혜택 정보 수정 완료');
       setIsEditing(false);
       await loadBenefitDetail();
-    } catch (error) {
-      console.error('혜택 정보 수정 실패:', error);
+    } catch {
+      // 에러 발생 시 무시
     } finally {
       setIsLoading(false);
     }

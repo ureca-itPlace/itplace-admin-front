@@ -16,10 +16,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
 }) => (
   <button
     type="button"
-    onClick={() => {
-      console.log('clicked', label);
-      onClick();
-    }}
+    onClick={onClick}
     className={`flex items-center justify-center w-full h-[40px] border border-grey03 rounded-[10px] text-body-3 gap-2 transition-colors duration-150 ${
       active ? 'border-purple04 text-purple04 bg-purple01' : 'text-grey04'
     }`}

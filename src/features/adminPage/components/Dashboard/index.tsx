@@ -116,8 +116,7 @@ const Dashboard = () => {
         setClickData(clickDataItems);
         setWishlistData(wishlistItems);
         setUsageData(usageDataItems);
-      } catch (err) {
-        console.error('대시보드 데이터 조회 실패:', err);
+      } catch {
         // 에러 발생 시 빈 배열로 초기화
         setSearchRankingData([]);
         setClickData([]);
