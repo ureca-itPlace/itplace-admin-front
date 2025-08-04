@@ -1,4 +1,5 @@
 import api from '../../../../../apis/axiosInstance';
+import { getKSTTimestamp } from '../../../../../utils/timestamp';
 
 // 제휴처 검색 순위 관련 타입
 export interface PartnerSearchRankingItem {
@@ -67,7 +68,7 @@ export const getPartnersSearchRanking = async (
       status: 'SUCCESS',
       message: '성공',
       data: [],
-      timestamp: new Date().toISOString(),
+      timestamp: getKSTTimestamp(),
     };
   }
 };
@@ -90,7 +91,7 @@ export const getMostClickedPartners = async (
       status: 'SUCCESS',
       message: '성공',
       data: [],
-      timestamp: new Date().toISOString(),
+      timestamp: getKSTTimestamp(),
     };
   }
 };
@@ -113,7 +114,7 @@ export const getFavoritesStatistics = async (
       status: 'SUCCESS',
       message: '성공',
       data: [],
-      timestamp: new Date().toISOString(),
+      timestamp: getKSTTimestamp(),
     };
   }
 };
@@ -136,7 +137,7 @@ export const getPartnerUsageStats = async (
       status: 'SUCCESS',
       message: '성공',
       data: [],
-      timestamp: new Date().toISOString(),
+      timestamp: getKSTTimestamp(),
     };
   }
 };

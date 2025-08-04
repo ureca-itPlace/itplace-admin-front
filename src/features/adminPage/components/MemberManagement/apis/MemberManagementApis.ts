@@ -1,4 +1,5 @@
 import api from '../../../../../apis/axiosInstance';
+import { getKSTTimestamp } from '../../../../../utils/timestamp';
 
 // API 응답 타입
 export interface ApiResponse<T = unknown> {
@@ -220,7 +221,7 @@ export const getMemberStatistics = async (): Promise<MemberStatistics> => {
     // 에러 발생시 빈 데이터 반환
     return {
       totalUsers: 0,
-      timestamp: new Date().toISOString(),
+      timestamp: getKSTTimestamp(),
     };
   }
 };

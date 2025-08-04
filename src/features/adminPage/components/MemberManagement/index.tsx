@@ -17,6 +17,7 @@ import {
   getMembersWithPagination,
   getMemberStatistics,
 } from './apis/MemberManagementApis';
+import { parseKSTTimestamp } from '../../../../utils/timestamp';
 import MobileDataTable from '../../../../components/common/MobileDataTable';
 
 const MemberManagement = () => {
@@ -72,8 +73,7 @@ const MemberManagement = () => {
         const statistics = await getMemberStatistics();
         setTotalMembers(statistics.totalUsers);
         if (statistics.timestamp) {
-          const [date, timeRaw] = statistics.timestamp.split('T');
-          const time = timeRaw ? timeRaw.split('.')[0] : '';
+          const { date, time } = parseKSTTimestamp(statistics.timestamp);
           setLastUpdated(`${date} ${time}`);
         } else {
           setLastUpdated('');
@@ -203,8 +203,7 @@ const MemberManagement = () => {
       const statistics = await getMemberStatistics();
       setTotalMembers(statistics.totalUsers);
       if (statistics.timestamp) {
-        const [date, timeRaw] = statistics.timestamp.split('T');
-        const time = timeRaw ? timeRaw.split('.')[0] : '';
+        const { date, time } = parseKSTTimestamp(statistics.timestamp);
         setLastUpdated(`${date} ${time}`);
       } else {
         setLastUpdated('');
