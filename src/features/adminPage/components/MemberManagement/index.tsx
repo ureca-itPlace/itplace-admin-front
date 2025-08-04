@@ -73,7 +73,9 @@ const MemberManagement = () => {
         const statistics = await getMemberStatistics();
         setTotalMembers(statistics.totalUsers);
         if (statistics.timestamp) {
+          console.log('Original timestamp:', statistics.timestamp);
           const { date, time } = parseKSTTimestamp(statistics.timestamp);
+          console.log('Parsed KST:', { date, time });
           setLastUpdated(`${date} ${time}`);
         } else {
           setLastUpdated('');
@@ -203,7 +205,9 @@ const MemberManagement = () => {
       const statistics = await getMemberStatistics();
       setTotalMembers(statistics.totalUsers);
       if (statistics.timestamp) {
+        console.log('Refresh - Original timestamp:', statistics.timestamp);
         const { date, time } = parseKSTTimestamp(statistics.timestamp);
+        console.log('Refresh - Parsed KST:', { date, time });
         setLastUpdated(`${date} ${time}`);
       } else {
         setLastUpdated('');
