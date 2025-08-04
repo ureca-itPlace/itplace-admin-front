@@ -73,10 +73,15 @@ const MemberManagement = () => {
         const statistics = await getMemberStatistics();
         setTotalMembers(statistics.totalUsers);
         if (statistics.timestamp) {
-          console.log('Original timestamp:', statistics.timestamp);
           const { date, time } = parseKSTTimestamp(statistics.timestamp);
-          console.log('Parsed KST:', { date, time });
-          setLastUpdated(`${date} ${time}`);
+          if (date && time) {
+            setLastUpdated(`${date} ${time}`);
+          } else {
+            // fallback: 현재 시간으로 설정
+            const now = new Date();
+            const { date: nowDate, time: nowTime } = parseKSTTimestamp(now);
+            setLastUpdated(`${nowDate} ${nowTime}`);
+          }
         } else {
           setLastUpdated('');
         }
@@ -205,10 +210,15 @@ const MemberManagement = () => {
       const statistics = await getMemberStatistics();
       setTotalMembers(statistics.totalUsers);
       if (statistics.timestamp) {
-        console.log('Refresh - Original timestamp:', statistics.timestamp);
         const { date, time } = parseKSTTimestamp(statistics.timestamp);
-        console.log('Refresh - Parsed KST:', { date, time });
-        setLastUpdated(`${date} ${time}`);
+        if (date && time) {
+          setLastUpdated(`${date} ${time}`);
+        } else {
+          // fallback: 현재 시간으로 설정
+          const now = new Date();
+          const { date: nowDate, time: nowTime } = parseKSTTimestamp(now);
+          setLastUpdated(`${nowDate} ${nowTime}`);
+        }
       } else {
         setLastUpdated('');
       }

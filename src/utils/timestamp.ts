@@ -27,28 +27,59 @@ export const getKSTTimestamp = (): string => {
  * @returns { date: "YYYY-MM-DD", time: "HH:MM" }
  */
 export const parseKSTTimestamp = (timestamp: string | Date) => {
-  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  try {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-  // KST 타임존으로 포맷팅
-  const kstFormatter = new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+    // 유효한 날짜인지 확인
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid timestamp:', timestamp);
+      return { date: '', time: '' };
+    }
 
-  const parts = kstFormatter.formatToParts(date);
-  const year = parts.find((part) => part.type === 'year')?.value || '';
-  const month = parts.find((part) => part.type === 'month')?.value || '';
-  const day = parts.find((part) => part.type === 'day')?.value || '';
-  const hour = parts.find((part) => part.type === 'hour')?.value || '';
-  const minute = parts.find((part) => part.type === 'minute')?.value || '';
+    // KST 타임존으로 포맷팅 (더 안전한 방식)
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
 
-  return {
-    date: `${year}-${month}-${day}`,
-    time: `${hour}:${minute}`,
-  };
+    // 한국어 로케일로 포맷팅하여 더 안전하게 처리
+    const formatter = new Intl.DateTimeFormat('ko-KR', options);
+    const formatted = formatter.format(date);
+
+    // "2025. 01. 04. 14:30" 형식을 파싱
+    const parts = formatted.replace(/\./g, '').trim().split(' ');
+
+    if (parts.length >= 4) {
+      const year = parts[0];
+      const month = parts[1].padStart(2, '0');
+      const day = parts[2].padStart(2, '0');
+      const time = parts[3] || '00:00';
+
+      return {
+        date: `${year}-${month}-${day}`,
+        time: time,
+      };
+    }
+
+    // fallback: 다른 방식으로 시도
+    const kstTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+    const year = kstTime.getUTCFullYear();
+    const month = String(kstTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(kstTime.getUTCDate()).padStart(2, '0');
+    const hours = String(kstTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(kstTime.getUTCMinutes()).padStart(2, '0');
+
+    return {
+      date: `${year}-${month}-${day}`,
+      time: `${hours}:${minutes}`,
+    };
+  } catch (error) {
+    console.error('Error parsing timestamp:', error, timestamp);
+    return { date: '', time: '' };
+  }
 };
