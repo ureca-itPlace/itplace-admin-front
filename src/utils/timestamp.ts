@@ -4,11 +4,21 @@
  */
 export const getKSTTimestamp = (): string => {
   const now = new Date();
-  const kstOffset = 9 * 60; // KST는 UTC+9
-  const kstTime = new Date(now.getTime() + kstOffset * 60 * 1000);
 
-  // KST 시간을 ISO 문자열로 변환하고 Z를 +09:00으로 대체
-  return kstTime.toISOString().replace('Z', '+09:00');
+  // KST 시간으로 포맷팅
+  const kstFormatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  const kstString = kstFormatter.format(now).replace(' ', 'T');
+  return `${kstString}.000+09:00`;
 };
 
 /**
@@ -19,25 +29,26 @@ export const getKSTTimestamp = (): string => {
 export const parseKSTTimestamp = (timestamp: string | Date) => {
   const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-  // 이미 KST인지 UTC인지 확인하여 적절히 처리
-  let kstTime: Date;
+  // KST 타임존으로 포맷팅
+  const kstFormatter = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 
-  if (typeof timestamp === 'string' && timestamp.includes('+09:00')) {
-    // 이미 KST로 표시된 경우
-    kstTime = date;
-  } else {
-    // UTC로 간주하고 KST로 변환
-    kstTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  }
-
-  const year = kstTime.getUTCFullYear();
-  const month = String(kstTime.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(kstTime.getUTCDate()).padStart(2, '0');
-  const hours = String(kstTime.getUTCHours()).padStart(2, '0');
-  const minutes = String(kstTime.getUTCMinutes()).padStart(2, '0');
+  const parts = kstFormatter.formatToParts(date);
+  const year = parts.find((part) => part.type === 'year')?.value || '';
+  const month = parts.find((part) => part.type === 'month')?.value || '';
+  const day = parts.find((part) => part.type === 'day')?.value || '';
+  const hour = parts.find((part) => part.type === 'hour')?.value || '';
+  const minute = parts.find((part) => part.type === 'minute')?.value || '';
 
   return {
     date: `${year}-${month}-${day}`,
-    time: `${hours}:${minutes}`,
+    time: `${hour}:${minute}`,
   };
 };
