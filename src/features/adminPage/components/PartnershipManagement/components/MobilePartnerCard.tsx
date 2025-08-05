@@ -24,7 +24,7 @@ const MobilePartnerCard: React.FC<MobilePartnerCardProps> = ({ partner, onLinkCl
             partner.type === 'FREE' ? '증정' : partner.type === 'DISCOUNT' ? '할인' : partner.type,
         },
         { label: '검색 순위', value: partner.searchRank ?? '-' },
-        { label: '즐겨찾기 순위', value: partner.favoriteRank ?? '-' },
+        { label: '관심 순위', value: partner.favoriteRank ?? '-' },
         { label: '이용 순위', value: partner.usageRank ?? '-' },
       ]}
     />

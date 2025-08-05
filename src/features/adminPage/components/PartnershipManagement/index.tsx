@@ -415,7 +415,7 @@ const PartnershipManagement = () => {
             sortField === 'favoriteRank' ? ' text-orange04 rounded-[4px]' : 'text-grey05'
           }`}
         >
-          <span>즐겨찾기 순위</span>
+          <span>관심 순위</span>
           {renderSortIcon('favoriteRank')}
         </button>
       ),
